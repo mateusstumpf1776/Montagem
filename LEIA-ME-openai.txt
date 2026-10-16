@@ -1,0 +1,73 @@
+MANUAL DE MONTAGEM COM OPENAI — V4.5
+===================================
+
+ARQUIVOS
+- montagem-xml-openai-v4.5.html  -> aplicativo
+- server-openai.mjs            -> servidor local que chama a OpenAI
+- package.json                 -> dependência do servidor
+
+NOVIDADES DA V4
+1. Cada peça selecionada em uma vista recebe uma quantidade própria "na vista".
+   Isso evita confundir a quantidade total do móvel com a quantidade usada naquela imagem.
+2. Parafusos e porcas podem ter torque de aperto em N·m.
+3. Chamadas A, B, C... agora fazem parte do fluxo principal e são obrigatórias para cada item selecionado.
+4. É possível colocar várias chamadas para a mesma peça e arrastá-las para reposicionar.
+5. As chamadas são enviadas à IA com letra, peça e coordenadas X/Y e aparecem na prévia/PDF/Word.
+6. Cada vista tem um campo "Orientações para a IA" para complementar o prompt antes da análise.
+7. O prompt-base trata operações repetitivas como um ciclo completo representativo e depois pede para repetir nas peças restantes, em vez de gerar dezenas de passos iguais.
+8. A IA recebe quantidadeTotal, quantidadeNestaVista e torqueNm separadamente.
+
+ATUALIZANDO UMA INSTALAÇÃO V3
+Se você já executou `npm.cmd install` na pasta da V3, não precisa instalar novamente.
+Substitua o HTML e o arquivo server-openai.mjs pelos desta versão e reinicie o servidor.
+
+PARA INICIAR NO POWERSHELL
+1. Abra o PowerShell dentro desta pasta.
+2. Defina a chave da OpenAI na sessão:
+   $env:OPENAI_API_KEY="SUA_CHAVE_REAL"
+3. Inicie:
+   npm.cmd start
+4. Deixe o terminal aberto.
+5. Abra montagem-xml-openai-v4.5.html no Chrome ou Edge.
+
+OBSERVAÇÃO
+A API da OpenAI é usada apenas ao analisar as vistas. Cadastro, chamadas, edição, pré-visualização, backup e exportação funcionam localmente.
+
+
+V4.3: adiciona o campo "Produto final" na aba Peças separadas. Essa descrição é salva no backup/XML e enviada à IA como contexto global para interpretar as vistas explodidas.
+
+
+=== SKILL DE REDAÇÃO TÉCNICA (V4.4) ===
+
+O arquivo SKILL.md agora é obrigatório e é carregado pelo server-openai.mjs ao iniciar.
+Todas as análises feitas em /api/analyze usam essa skill como instrução permanente da IA.
+
+Isso significa que as regras R1–R6 da skill são aplicadas à geração dos passos, incluindo:
+- chamada obrigatória para componentes citados;
+- retirada de especificações do texto dos steps;
+- uso de verbos no imperativo;
+- steps somente para ações operacionais;
+- sequência fisicamente coerente;
+- sinalização de pendências quando faltarem dados.
+
+Você pode editar SKILL.md no futuro. Depois de editar, feche e reinicie o servidor com:
+  npm.cmd start
+
+Ao iniciar corretamente, o terminal mostrará:
+  Skill obrigatória carregada: redacao-tecnica-montagem v1.0.0
+
+Não apague o arquivo SKILL.md da pasta do projeto.
+
+
+=== VALIDAÇÃO AUTOMÁTICA DA SKILL (V4.5) ===
+
+O aplicativo agora executa verificações locais antes da exportação e durante a edição:
+- R1: detecta componentes/steps sem chamadas válidas e letras inexistentes ou ausentes no texto.
+- R2: detecta medidas, roscas e códigos/SKU dentro do texto dos steps.
+- R3: valida chamadas sem posição ou sem peça e gera automaticamente a legenda abaixo de cada imagem.
+- R4: avisa quando o step não parece começar com verbo no imperativo.
+- R5: avisa quando o texto parece descritivo/não operacional.
+- R6: exibe incertezas retornadas pela análise visual e steps de confiança baixa como pendências de revisão técnica.
+
+A pré-visualização mostra um painel consolidado, a lista de passos exibe badges R1–R6 e a aba Exportar mostra a contagem de erros/avisos.
+As legendas também são incluídas na pré-visualização, no Word e no XML.

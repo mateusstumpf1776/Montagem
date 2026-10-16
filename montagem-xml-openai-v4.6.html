@@ -1,0 +1,1969 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Instruções de Montagem — Gerador XML</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F6F4EF;
+    --paper-dim:#EDEAE1;
+    --ink:#1B2740;
+    --ink-soft:#4A5670;
+    --blueprint:#2A5FCB;
+    --blueprint-dim:#DCE5FA;
+    --safety:#D9622B;
+    --safety-dim:#FBE6D9;
+    --success:#3E7C4A;
+    --success-dim:#E1EEE3;
+    --line:#D8D3C6;
+    --line-strong:#B9B2A0;
+    --white:#FFFFFF;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'IBM Plex Sans',sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size:28px 28px;
+    background-attachment:fixed;
+    min-height:100vh;
+  }
+  header{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:18px 28px;background:var(--ink);color:var(--paper);
+    border-bottom:3px solid var(--blueprint);
+  }
+  header h1{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:16px;letter-spacing:0.06em;text-transform:uppercase;font-weight:600;margin:0;
+  }
+  header h1 span{color:var(--blueprint);}
+  .header-actions{display:flex;gap:8px;flex-wrap:wrap;}
+  .btn{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;letter-spacing:0.03em;text-transform:uppercase;
+    padding:8px 14px;border-radius:2px;border:1px solid var(--line-strong);
+    background:var(--white);color:var(--ink);cursor:pointer;font-weight:600;
+    transition:all .12s ease;
+  }
+  .btn:hover{border-color:var(--blueprint);color:var(--blueprint);}
+  .btn-primary{background:var(--blueprint);color:var(--white);border-color:var(--blueprint);}
+  .btn-primary:hover{background:#1F4CAA;color:var(--white);}
+  .btn-danger{border-color:var(--safety);color:var(--safety);background:var(--white);}
+  .btn-danger:hover{background:var(--safety);color:var(--white);}
+  .btn-ghost{background:transparent;border-color:transparent;color:var(--ink-soft);}
+  .btn:disabled{opacity:.35;cursor:not-allowed;}
+  header .btn{background:transparent;border-color:#38466A;color:var(--paper);}
+  header .btn:hover{border-color:var(--blueprint);color:#7DA1F0;}
+  .btn-sm{padding:4px 10px;font-size:10.5px;}
+
+  nav.tabs{
+    display:flex;gap:2px;padding:0 28px;background:var(--paper-dim);
+    border-bottom:1px solid var(--line-strong);
+  }
+  nav.tabs button{
+    font-family:'IBM Plex Mono',monospace;font-size:12.5px;letter-spacing:0.04em;
+    text-transform:uppercase;font-weight:600;padding:12px 20px;
+    background:transparent;border:none;color:var(--ink-soft);cursor:pointer;
+    border-bottom:3px solid transparent;position:relative;top:1px;
+  }
+  nav.tabs button.active{color:var(--ink);border-bottom-color:var(--blueprint);}
+  nav.tabs button .count{
+    display:inline-block;margin-left:6px;background:var(--line-strong);color:var(--white);
+    border-radius:8px;padding:0 6px;font-size:10px;
+  }
+  nav.tabs button.active .count{background:var(--blueprint);}
+
+  main{padding:24px 28px 60px;max-width:1400px;margin:0 auto;}
+  .panel{
+    background:var(--white);border:1px solid var(--line-strong);border-radius:3px;
+    box-shadow:0 1px 0 rgba(27,39,64,0.03);
+  }
+  .panel-header{
+    padding:14px 18px;border-bottom:1px solid var(--line);
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+  }
+  .panel-header h2{
+    font-family:'IBM Plex Mono',monospace;font-size:13px;text-transform:uppercase;
+    letter-spacing:0.04em;margin:0;color:var(--ink-soft);font-weight:600;
+  }
+  .panel-body{padding:18px;}
+
+  /* ---- Peças tab ---- */
+  .pecas-layout{display:grid;grid-template-columns:340px 1fr;gap:20px;align-items:start;}
+  .field{margin-bottom:12px;}
+  .field label{
+    display:block;font-size:11px;font-family:'IBM Plex Mono',monospace;
+    text-transform:uppercase;letter-spacing:0.03em;color:var(--ink-soft);margin-bottom:4px;
+  }
+  input[type=text],input[type=number],input[type=password],select,textarea{
+    width:100%;padding:8px 10px;border:1px solid var(--line-strong);border-radius:2px;
+    font-family:'IBM Plex Sans',sans-serif;font-size:13.5px;background:var(--paper);color:var(--ink);
+  }
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--blueprint);outline-offset:1px;background:var(--white);}
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  table th{
+    text-align:left;font-family:'IBM Plex Mono',monospace;font-size:10.5px;text-transform:uppercase;
+    color:var(--ink-soft);padding:8px 10px;border-bottom:2px solid var(--line-strong);letter-spacing:0.03em;
+  }
+  table td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle;}
+  table tr:hover td{background:var(--paper-dim);}
+  .tag{
+    display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;
+    text-transform:uppercase;padding:2px 7px;border-radius:2px;letter-spacing:0.03em;
+  }
+  .tag-peca{background:var(--blueprint-dim);color:var(--blueprint);}
+  .tag-parafuso{background:var(--safety-dim);color:var(--safety);}
+  .tag-porca{background:#E8E2F4;color:#654A8B;}
+  .tag-tarugo{background:#F0E6D2;color:#8A6B1F;}
+  .tag-outro{background:var(--paper-dim);color:var(--ink-soft);}
+  .icon-btn{background:none;border:none;cursor:pointer;color:var(--ink-soft);font-size:14px;padding:2px 6px;}
+  .icon-btn:hover{color:var(--safety);}
+  .empty-state{
+    padding:40px 20px;text-align:center;color:var(--ink-soft);font-size:13.5px;
+    border:1px dashed var(--line-strong);border-radius:3px;
+  }
+
+  /* ---- Montagem tab ---- */
+  .montagem-layout{display:grid;grid-template-columns:210px 1fr 320px;gap:16px;align-items:start;}
+  .steps-list{display:flex;flex-direction:column;gap:8px;}
+  .step-thumb{
+    border:1px solid var(--line-strong);border-radius:3px;overflow:hidden;cursor:pointer;
+    background:var(--white);position:relative;
+  }
+  .step-thumb.active{border-color:var(--blueprint);box-shadow:0 0 0 2px var(--blueprint-dim);}
+  .step-thumb img{width:100%;height:90px;object-fit:cover;display:block;background:var(--paper-dim);}
+  .step-thumb .label{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:6px 8px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;
+  }
+  .step-thumb .badge{
+    background:var(--ink);color:var(--paper);border-radius:50%;width:18px;height:18px;
+    display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;
+  }
+  .step-thumb .status-dot{width:7px;height:7px;border-radius:50%;background:var(--safety);flex-shrink:0;}
+  .step-thumb.complete .status-dot{background:var(--success);}
+  .step-thumb-actions{
+    position:absolute;top:5px;right:5px;display:flex;gap:4px;z-index:5;
+  }
+  .step-thumb-action{
+    width:25px;height:25px;border:1px solid rgba(27,39,64,.22);border-radius:2px;
+    background:rgba(255,255,255,.94);color:var(--ink);cursor:pointer;font-size:12px;font-weight:700;
+    display:inline-flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(27,39,64,.12);
+  }
+  .step-thumb-action:hover{border-color:var(--blueprint);color:var(--blueprint);}
+  .step-thumb-action.delete:hover{border-color:var(--safety);color:var(--safety);}
+  .step-thumb-action:disabled{opacity:.3;cursor:not-allowed;}
+  .add-image-btn{
+    border:1px dashed var(--line-strong);border-radius:3px;padding:16px 8px;text-align:center;
+    cursor:pointer;color:var(--ink-soft);font-size:12px;font-family:'IBM Plex Mono',monospace;
+    background:var(--paper-dim);
+  }
+  .add-image-btn:hover{border-color:var(--blueprint);color:var(--blueprint);}
+
+  .image-stage{position:relative;background:var(--white);border:1px solid var(--line-strong);border-radius:3px;
+    min-height:400px;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .image-stage .stage-inner{position:relative;display:inline-block;line-height:0;}
+  .image-stage img{max-width:100%;max-height:70vh;display:block;cursor:crosshair;}
+  .stage-empty{padding:60px 20px;text-align:center;color:var(--ink-soft);font-size:13px;}
+
+  .callout-layer{position:absolute;left:0;top:0;pointer-events:none;}
+  .callout-overlay{display:block;overflow:visible;pointer-events:none;}
+  .callout-group{pointer-events:none;}
+  .callout-line{stroke:var(--ink);stroke-width:2;vector-effect:non-scaling-stroke;stroke-linecap:round;}
+  .callout-arrowhead{fill:var(--ink);}
+  .callout-circle-shape{fill:var(--white);stroke:var(--ink);stroke-width:2;vector-effect:non-scaling-stroke;}
+  .callout-label{font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;fill:var(--ink);text-anchor:middle;dominant-baseline:middle;user-select:none;}
+  .callout-group.incomplete .callout-circle-shape,.callout-group.incomplete .callout-line,.callout-group.incomplete .callout-arrowhead{stroke:var(--line-strong);fill:var(--line-strong);}
+  .callout-group.incomplete .callout-circle-shape{fill:var(--white);}
+  .callout-group.incomplete .callout-label{fill:var(--line-strong);}
+  .callout-group.selected .callout-circle-shape{stroke:var(--safety);}
+  .callout-group.selected .callout-line{stroke:var(--safety);}
+  .callout-group.selected .callout-arrowhead{fill:var(--safety);}
+  .callout-circle-hit{fill:transparent;pointer-events:all;cursor:grab;}
+  .callout-handle{fill:var(--blueprint);stroke:#fff;stroke-width:2;vector-effect:non-scaling-stroke;pointer-events:all;cursor:crosshair;opacity:0;}
+  .callout-group.selected .callout-handle{opacity:1;}
+
+  .chamada-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+  .chamada-row select{flex:1;}
+  .letra-badge{
+    flex-shrink:0;width:24px;height:24px;border-radius:50%;background:var(--blueprint);color:var(--white);
+    display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;
+    font-size:11px;font-weight:700;
+  }
+  .chamada-row.selected .letra-badge{background:var(--safety);}
+
+  .no-selection{padding:24px 14px;color:var(--ink-soft);font-size:13px;text-align:center;}
+  .callout-list-item{
+    display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--line);
+    border-radius:2px;margin-bottom:6px;cursor:pointer;font-size:12.5px;background:var(--paper);
+  }
+  .callout-list-item:hover{border-color:var(--blueprint);}
+  .callout-list-item.selected{border-color:var(--blueprint);background:var(--blueprint-dim);}
+  .callout-list-item .num{
+    font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--blueprint);width:20px;flex-shrink:0;
+  }
+  .callout-list-item .desc{flex:1;line-height:1.3;}
+  .callout-list-item .desc small{color:var(--ink-soft);display:block;}
+  .step-inline-actions{display:flex;align-items:center;gap:3px;flex-shrink:0;}
+  .step-inline-action{
+    width:24px;height:24px;border:1px solid var(--line);border-radius:2px;background:var(--white);
+    color:var(--ink-soft);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;
+    font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;
+  }
+  .step-inline-action:hover{border-color:var(--blueprint);color:var(--blueprint);}
+  .step-inline-action.delete:hover{border-color:var(--safety);color:var(--safety);}
+  .step-inline-action:disabled{opacity:.28;cursor:not-allowed;}
+  .hint{font-size:11.5px;color:var(--ink-soft);margin-top:4px;line-height:1.4;}
+
+  /* ---- Exportar tab ---- */
+  .export-layout{display:grid;grid-template-columns:260px 1fr;gap:20px;}
+  .export-summary .stat{
+    display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);
+    font-size:13px;
+  }
+  .export-summary .stat strong{font-family:'IBM Plex Mono',monospace;color:var(--blueprint);}
+  pre.xml-view{
+    background:#0F1826;color:#D9E3F5;padding:18px;border-radius:3px;font-family:'IBM Plex Mono',monospace;
+    font-size:12px;line-height:1.6;overflow:auto;max-height:70vh;margin:0;
+  }
+  .xml-view .tag-name{color:#7DA1F0;}
+  .xml-view .attr{color:#E0A25E;}
+  .xml-view .val{color:#9CCB8E;}
+  .warn-banner{
+    background:var(--safety-dim);color:#8A3E17;padding:10px 14px;border-radius:2px;font-size:12.5px;
+    margin-bottom:14px;border:1px solid #EBC1A0;
+  }
+  select[disabled]{opacity:.5;}
+  ::placeholder{color:#A6A08F;}
+
+  /* ---- Barra de título do manual ---- */
+  .manual-title-bar{
+    display:flex;align-items:center;gap:12px;padding:12px 28px;
+    background:var(--white);border-bottom:1px solid var(--line-strong);
+  }
+  .manual-title-bar label{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;
+    letter-spacing:0.03em;color:var(--ink-soft);white-space:nowrap;
+  }
+  .manual-title-bar input{max-width:520px;font-weight:600;}
+
+  /* ---- Pré-visualização ---- */
+  .preview-page{
+    background:var(--white);border:1px solid var(--line-strong);border-radius:2px;
+    max-width:920px;margin:0 auto;padding:48px 56px;box-shadow:0 2px 10px rgba(27,39,64,0.06);
+  }
+  .preview-title{
+    font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:700;text-align:center;
+    text-transform:uppercase;letter-spacing:0.03em;color:var(--ink);
+    padding-bottom:18px;margin:0 0 32px;border-bottom:3px solid var(--blueprint);
+  }
+  .preview-block{
+    display:grid;grid-template-columns:300px 1fr;gap:32px;align-items:start;
+    padding:28px 0;border-bottom:1px dashed var(--line-strong);
+  }
+  .preview-block:last-child{border-bottom:none;}
+  .preview-image-inner{position:relative;line-height:0;}
+  .preview-image-inner img{width:100%;border-radius:2px;border:1px solid var(--line-strong);display:block;}
+  .preview-steps{margin:0;padding-left:0;list-style:none;font-size:14.5px;line-height:1.9;color:var(--ink);}
+  .preview-steps li{padding-left:0;}
+  .preview-steps .empty-hint{color:var(--ink-soft);font-style:italic;}
+  .step-num{font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--blueprint);margin-right:6px;}
+
+  @media print{
+    header, nav.tabs, .manual-title-bar, .preview-toolbar,
+    #tab-pecas, #tab-montagem, #tab-exportar{ display:none !important; }
+    #tab-preview{ display:block !important; }
+    main{ padding:0; max-width:100%; }
+    body{ background:#fff; }
+    .preview-page{ box-shadow:none; border:none; max-width:100%; padding:0 8px; margin:0; }
+    .preview-block{ page-break-inside:avoid; }
+    .badge-ia, .badge-draft{ display:none !important; }
+  }
+
+  /* ---- Modal de confirmação e toasts (substituem confirm()/alert() nativos) ---- */
+  .modal-overlay{
+    position:fixed;inset:0;background:rgba(27,39,64,0.55);display:flex;align-items:center;
+    justify-content:center;z-index:1000;padding:20px;
+  }
+  .modal-box{
+    background:var(--white);border-radius:3px;max-width:440px;width:100%;
+    box-shadow:0 12px 40px rgba(0,0,0,0.3);border-top:4px solid var(--blueprint);
+  }
+  .modal-box .modal-body{padding:22px 22px 6px;font-size:14px;line-height:1.6;color:var(--ink);white-space:pre-line;}
+  .modal-box .modal-actions{display:flex;gap:8px;justify-content:flex-end;padding:16px 22px 22px;}
+  .toast-stack{
+    position:fixed;top:16px;right:16px;z-index:1100;display:flex;flex-direction:column;gap:8px;
+    max-width:340px;
+  }
+  .toast{
+    background:var(--ink);color:var(--paper);padding:11px 14px;border-radius:2px;font-size:13px;
+    line-height:1.4;box-shadow:0 4px 14px rgba(0,0,0,0.25);border-left:4px solid var(--blueprint);
+  }
+  .toast.toast-error{border-left-color:var(--safety);}
+  .toast.toast-success{border-left-color:var(--success);}
+
+  /* ---- Configuração de IA ---- */
+  .ia-config{
+    max-width:920px;margin:0 auto 14px;padding:12px 16px;background:var(--paper-dim);
+    border:1px solid var(--line-strong);border-radius:2px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .ia-config input{max-width:340px;flex:1;min-width:220px;}
+  .ia-config .hint{margin:0;flex-basis:100%;}
+
+  .preview-toolbar{
+    max-width:920px;margin:0 auto 14px;display:flex;align-items:center;justify-content:space-between;
+    gap:16px;padding:12px 16px;background:var(--paper-dim);border:1px solid var(--line-strong);border-radius:2px;
+  }
+  .preview-toolbar strong{font-size:13px;}
+  .badge-draft{
+    display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:9.5px;text-transform:uppercase;
+    letter-spacing:0.03em;color:var(--safety);border:1px solid var(--safety);border-radius:2px;
+    padding:0 5px;margin-left:6px;vertical-align:middle;
+  }
+  .badge-ia{
+    display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:9.5px;text-transform:uppercase;
+    letter-spacing:0.03em;color:var(--success);border:1px solid var(--success);border-radius:2px;
+    padding:0 5px;margin-left:6px;vertical-align:middle;
+  }
+
+  /* ---- Validação automática da skill ---- */
+  .validation-panel{
+    max-width:920px;margin:0 auto 14px;padding:14px 16px;background:var(--white);
+    border:1px solid var(--line-strong);border-radius:2px;
+  }
+  .validation-panel h3{
+    margin:0 0 8px;font:600 12px 'IBM Plex Mono',monospace;text-transform:uppercase;
+    letter-spacing:.03em;color:var(--ink-soft);
+  }
+  .validation-summary{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;}
+  .validation-pill{font:600 10px 'IBM Plex Mono',monospace;padding:3px 7px;border-radius:10px;border:1px solid var(--line-strong);}
+  .validation-pill.error{color:var(--safety);border-color:var(--safety);background:var(--safety-dim);}
+  .validation-pill.warning{color:#8A6B1F;border-color:#D2B773;background:#F7F0DA;}
+  .validation-pill.ok{color:var(--success);border-color:var(--success);background:var(--success-dim);}
+  .validation-list{margin:6px 0 0 18px;padding:0;font-size:12px;line-height:1.45;}
+  .validation-list li{margin:4px 0;}
+  .validation-rule{font-family:'IBM Plex Mono',monospace;font-weight:700;margin-right:5px;}
+  .validation-step-badges{display:inline-flex;gap:4px;margin-left:6px;vertical-align:middle;}
+  .validation-step-badge{font:700 9px 'IBM Plex Mono',monospace;border-radius:2px;padding:1px 4px;border:1px solid var(--safety);color:var(--safety);background:var(--white);}
+  .validation-step-badge.warning{border-color:#B48A2C;color:#8A6B1F;}
+  .preview-legend{margin-top:8px;font-size:11px;line-height:1.45;color:var(--ink);}
+  .preview-legend-item{display:block;margin:2px 0;}
+  .preview-legend-letter{font-family:'IBM Plex Mono',monospace;font-weight:700;}
+  .preview-legend-item.invalid{color:var(--safety);}
+  @media print{.validation-panel{display:none!important;}}
+
+
+  /* ---- Fluxo IA por vista explodida ---- */
+  .ai-workflow-card{border:1px solid var(--blueprint);background:#F8FAFF;border-radius:3px;overflow:hidden;margin-bottom:10px;}
+  .ai-workflow-card .panel-header{background:var(--blueprint-dim);border-bottom-color:#BFCDF1;}
+  .part-picker{display:flex;flex-direction:column;gap:6px;max-height:280px;overflow:auto;padding-right:2px;}
+  .part-option{display:grid;grid-template-columns:20px minmax(0,1fr) 112px;gap:8px;align-items:center;padding:8px 9px;border:1px solid var(--line);border-radius:2px;background:var(--white);cursor:default;}
+  .part-usage{display:flex;flex-direction:column;gap:3px;align-items:flex-end;}
+  .part-option .part-usage input[type=number]{width:92px;height:auto;padding:6px 8px;font-family:'IBM Plex Mono',monospace;font-size:12px;text-align:center;}
+  .part-usage small{font-size:9px;color:var(--ink-soft);white-space:nowrap;}
+  .prompt-notes{min-height:90px;resize:vertical;}
+  .required-note{font-size:10.5px;color:var(--safety);margin-top:6px;}
+  .callout-tools{display:flex;gap:6px;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;}
+  .part-option:hover{border-color:var(--blueprint);}
+  .part-option > input[type=checkbox]{width:15px;height:15px;margin:0;accent-color:var(--blueprint);}
+  .part-option .part-main{font-size:12.5px;line-height:1.25;}
+  .part-option .part-main small{display:block;color:var(--ink-soft);margin-top:2px;}
+  .part-option .part-qty{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink-soft);white-space:nowrap;}
+  .ai-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px;}
+  .ai-actions .btn-primary{flex:1;}
+  .ai-status-box{margin-top:10px;padding:9px 10px;border-radius:2px;background:var(--paper);border:1px solid var(--line);font-size:11.5px;line-height:1.45;color:var(--ink-soft);}
+  .ai-status-box.ok{background:var(--success-dim);border-color:#B7D2BD;color:#315F39;}
+  .ai-status-box.warn{background:var(--safety-dim);border-color:#EBC1A0;color:#8A3E17;}
+  .ai-analysis-summary{margin-top:9px;padding-top:9px;border-top:1px solid var(--line);font-size:12px;line-height:1.45;}
+  .confidence{font-family:'IBM Plex Mono',monospace;font-size:9px;text-transform:uppercase;border:1px solid var(--line-strong);border-radius:2px;padding:1px 4px;margin-left:5px;color:var(--ink-soft);}
+  .confidence-alta{color:var(--success);border-color:var(--success);}
+  .confidence-media{color:#8A6B1F;border-color:#B99A4B;}
+  .confidence-baixa{color:var(--safety);border-color:var(--safety);}
+  details.manual-advanced{border:1px dashed var(--line-strong);border-radius:3px;background:var(--paper);margin-top:10px;}
+  details.manual-advanced summary{cursor:pointer;padding:10px 12px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;text-transform:uppercase;color:var(--ink-soft);font-weight:600;}
+  details.manual-advanced[open] summary{border-bottom:1px dashed var(--line-strong);}
+  .server-config{max-width:920px;margin:0 auto 14px;padding:12px 16px;background:var(--paper-dim);border:1px solid var(--line-strong);border-radius:2px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .server-config input{max-width:430px;flex:1;min-width:260px;}
+  .server-config .hint{margin:0;flex-basis:100%;}
+
+  .produto-context-panel{margin-bottom:18px;border-left:4px solid var(--blueprint);}
+  .produto-context-panel textarea{min-height:88px;resize:vertical;line-height:1.45;}
+  .produto-context-panel .context-example{font-size:11.5px;color:var(--ink-soft);margin:6px 0 0;line-height:1.45;}
+</style>
+</head>
+<body>
+
+<div class="toast-stack" id="toastStack"></div>
+<div id="modalRoot"></div>
+
+<header>
+  <h1>Instruções de Montagem <span>/ XML</span></h1>
+  <div class="header-actions">
+    <button class="btn" id="btnNovoManual">Novo manual</button>
+    <button class="btn" id="btnBaixarWord">Baixar Word</button>
+    <button class="btn" id="btnBaixarPdf">Baixar PDF</button>
+    <button class="btn" id="btnImport">Importar backup</button>
+    <button class="btn" id="btnExportJson">Salvar backup</button>
+    <input type="file" id="importInput" accept="application/json" style="display:none;">
+  </div>
+</header>
+
+<nav class="tabs">
+  <button data-tab="pecas" class="active">Peças separadas <span class="count" id="countPecas">0</span></button>
+  <button data-tab="montagem">Montagem <span class="count" id="countPassos">0</span></button>
+  <button data-tab="preview">Pré-visualização</button>
+  <button data-tab="exportar">Exportar XML</button>
+</nav>
+
+<div class="manual-title-bar">
+  <label for="manualTitulo">Título do manual</label>
+  <input type="text" id="manualTitulo" placeholder="Ex: Guarda-roupa Modelo Atlas — Manual de Montagem">
+</div>
+
+<main>
+
+  <!-- ================= TAB: PEÇAS ================= -->
+  <section id="tab-pecas">
+    <div class="panel produto-context-panel">
+      <div class="panel-header"><h2>Produto final</h2></div>
+      <div class="panel-body">
+        <div class="field" style="margin-bottom:0;">
+          <label for="produtoFinalDescricao">Descreva o produto que será montado</label>
+          <textarea id="produtoFinalDescricao" rows="3" placeholder="Ex: Armário de duas portas com três prateleiras internas; Colheitadeira com conjunto do rotor e carenagens laterais."></textarea>
+          <p class="context-example">Use este campo para dar contexto à IA sobre o conjunto completo. A descrição é salva no manual e considerada durante a análise das vistas explodidas.</p>
+        </div>
+      </div>
+    </div>
+    <div class="pecas-layout">
+      <div class="panel">
+        <div class="panel-header"><h2>Adicionar peça</h2></div>
+        <div class="panel-body">
+          <div class="field">
+            <label>Nome da peça</label>
+            <input type="text" id="pecaNome" placeholder="Ex: Lateral esquerda / Parafuso M6x40 / Tarugo 8x30">
+          </div>
+          <div class="field field-row" style="display:flex;gap:8px;">
+            <div class="field" style="flex:1;">
+              <label>Tipo</label>
+              <select id="pecaTipo">
+                <option value="peca">Peça</option>
+                <option value="parafuso">Parafuso</option>
+                <option value="porca">Porca</option>
+                <option value="tarugo">Tarugo</option>
+                <option value="outro">Outro item</option>
+              </select>
+            </div>
+            <div class="field" style="width:100px;">
+              <label>Qtd.</label>
+              <input type="number" id="pecaQtd" min="1" value="1">
+            </div>
+          </div>
+          <div class="field">
+            <label>Código / SKU (opcional)</label>
+            <input type="text" id="pecaCodigo" placeholder="Ex: OS-1234">
+          </div>
+          <div class="field" id="pecaTorqueField" style="display:none;">
+            <label>Torque de aperto (N·m)</label>
+            <input type="number" id="pecaTorque" min="0" step="0.1" placeholder="Ex: 8,5">
+            <p class="hint">Disponível para parafusos e porcas. A IA deverá incluir esse torque quando o fixador for apertado.</p>
+          </div>
+          <button class="btn btn-primary" id="btnAddPeca" style="width:100%;">Adicionar à lista</button>
+          <p class="hint">Cadastre aqui todas as peças, parafusos e tarugos separados antes de iniciar a montagem. Você poderá referenciá-los nas chamadas e nos passos.</p>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header"><h2>Lista de peças separadas</h2></div>
+        <div class="panel-body" id="pecasTableWrap">
+          <div class="empty-state">Nenhuma peça cadastrada ainda.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= TAB: MONTAGEM ================= -->
+  <section id="tab-montagem" style="display:none;">
+    <div class="montagem-layout">
+      <div>
+        <div class="panel" style="margin-bottom:10px;">
+          <div class="panel-header"><h2>Imagens</h2></div>
+          <div class="panel-body" style="padding:10px;">
+            <div class="steps-list" id="stepsList"></div>
+            <div class="add-image-btn" id="btnAddImage" style="margin-top:8px;">+ Adicionar imagem</div>
+            <input type="file" id="imageInput" accept="image/*" multiple style="display:none;">
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <h2 id="stageTitle">Imagem</h2>
+          <span class="hint" id="stageHint" style="margin:0;"></span>
+        </div>
+        <div class="panel-body" style="padding:14px;">
+          <div class="image-stage" id="imageStage">
+            <div class="stage-empty">Adicione uma imagem para começar a marcar as chamadas.</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="ai-workflow-card">
+          <div class="panel-header"><h2>1. Peças visíveis na vista</h2></div>
+          <div class="panel-body" id="pecasImagemPanel" style="padding:14px;">
+            <p class="hint">Adicione uma vista explodida para selecionar as peças que aparecem nela.</p>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-bottom:10px;">
+          <div class="panel-header"><h2>2. Chamadas da vista</h2></div>
+          <div class="panel-body" style="padding:14px;">
+            <div class="callout-tools">
+              <span class="hint" style="margin:0;">Cada peça selecionada deve ter ao menos uma chamada. Você pode repetir a mesma peça em várias letras.</span>
+              <button class="btn btn-sm" id="btnToggleMarkerMode">Posicionar chamadas: desligado</button>
+            </div>
+            <div id="chamadasPanelBody"><p class="hint">Selecione as peças da vista e depois clique na imagem para criar A, B, C...</p></div>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-bottom:10px;">
+          <div class="panel-header"><h2>3. Orientações para a IA</h2></div>
+          <div class="panel-body" style="padding:14px;">
+            <textarea id="aiPromptNotes" class="prompt-notes" placeholder="Opcional. Ex: a chapa deve ser montada primeiro; a seta indica o sentido de inserção; não considerar o componente ao fundo..."></textarea>
+            <p class="hint">Estas orientações são adicionadas ao prompt somente para esta vista. As regras de segurança e consistência do gerador continuam valendo.</p>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-bottom:10px;">
+          <div class="panel-header"><h2>4. Análise da vista com IA</h2></div>
+          <div class="panel-body" style="padding:14px;">
+            <button class="btn btn-primary" id="btnAnalisarImagem" style="width:100%;">Analisar vista e gerar instruções</button>
+            <div class="ai-status-box" id="aiImageStatus">Selecione as peças, informe a quantidade usada nesta vista e posicione as chamadas antes de analisar.</div>
+            <div id="aiAnalysisSummary"></div>
+            <div id="aiValidationSummary"></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header"><h2>5. Instruções geradas</h2></div>
+          <div class="panel-body" style="padding:14px;">
+            <div id="passoList"></div>
+          </div>
+          <details class="manual-advanced" id="manualAdvancedEditor">
+            <summary>Editor manual dos passos</summary>
+            <div class="panel-body" style="border-top:1px solid var(--line);">
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px;">
+                <strong style="font-size:12px;">Editor manual</strong>
+                <button class="btn btn-primary btn-sm" id="btnNovoPasso">+ Novo passo</button>
+              </div>
+              <div id="passoEditorBody">
+                <div class="no-selection">Use esta área se quiser complementar ou corrigir a interpretação da IA.</div>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= TAB: PRÉ-VISUALIZAÇÃO ================= -->
+  <section id="tab-preview" style="display:none;">
+    <div class="server-config">
+      <label for="aiServerInput" style="font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;color:var(--ink-soft);white-space:nowrap;">Servidor OpenAI</label>
+      <input type="text" id="aiServerInput" placeholder="http://localhost:3000/api/analyze">
+      <button class="btn" id="btnSalvarAiServer">Salvar endereço</button>
+      <p class="hint">A chave da OpenAI não fica neste HTML. O aplicativo chama um pequeno servidor local/backend, que mantém a chave em segurança e envia a vista explodida ao modelo com visão.</p>
+    </div>
+    <div class="preview-toolbar">
+      <div>
+        <strong>Textos das instruções</strong>
+        <span class="hint" id="previewStatus" style="display:block;margin-top:2px;">As instruções são geradas a partir da vista explodida e das peças selecionadas.</span>
+      </div>
+      <button class="btn" id="btnGerarIA">Analisar todas as vistas</button>
+    </div>
+    <div id="previewValidation"></div>
+    <div class="preview-page" id="previewContent"></div>
+  </section>
+
+  <!-- ================= TAB: EXPORTAR ================= -->
+  <section id="tab-exportar" style="display:none;">
+    <div class="export-layout">
+      <div class="panel export-summary">
+        <div class="panel-header"><h2>Resumo</h2></div>
+        <div class="panel-body" id="exportSummary"></div>
+        <div class="panel-body" style="border-top:1px solid var(--line);">
+          <button class="btn btn-primary" id="btnDownloadXml" style="width:100%;">Baixar XML</button>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header"><h2>manual-montagem.xml</h2></div>
+        <div class="panel-body">
+          <pre class="xml-view" id="xmlPreview"></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+/* ============================================================
+   ESTADO
+   ============================================================
+   state.passos[]      -> cada item é uma IMAGEM/PÁGINA do manual
+     .chamadas[]        -> marcadores na imagem: {id, x, y, pecaId}  (letra = posição no array)
+     .selectedPecaIds[]  -> peças informadas pelo autor como visíveis na vista explodida
+     .partUsage{}       -> quantidade de cada peça efetivamente usada nesta vista
+     .aiPromptNotes     -> orientação adicional do autor para a análise desta vista
+     .passos[]           -> instruções geradas/revisadas: {id, pecaIds:[...], chamadaIds:[...], atividade, itemId, obs, descricaoIA}
+*/
+let state = {
+  titulo: '',
+  produtoFinalDescricao: '',
+  pecas: [],
+  passos: [],
+  currentStepId: null,
+  selectedCalloutId: null,
+  selectedPassoId: null,
+  markerMode: false,
+  nextPecaNum: 1,
+  nextPassoNum: 1,
+};
+
+const ATIVIDADES = [
+  {value:'parafusar', label:'Parafusar', needs:'parafuso'},
+  {value:'apertar', label:'Apertar fixador', needs:null},
+  {value:'colar', label:'Colar', needs:null},
+  {value:'juntar', label:'Juntar (com tarugo)', needs:'tarugo'},
+  {value:'encaixar', label:'Encaixar', needs:null},
+  {value:'martelar', label:'Martelar / Bater', needs:null},
+  {value:'outro', label:'Outro', needs:null},
+];
+
+function uid(prefix){ return prefix + '_' + Math.random().toString(36).slice(2,9); }
+
+function calloutLetter(idx){
+  let n = idx + 1, s = '';
+  while(n > 0){
+    const rem = (n - 1) % 26;
+    s = String.fromCharCode(65 + rem) + s;
+    n = Math.floor((n - 1) / 26);
+  }
+  return s;
+}
+
+function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
+function normalizeCallout(chamada){
+  if(!chamada) return chamada;
+  const x=Number.isFinite(parseFloat(chamada.x))?clamp(parseFloat(chamada.x),0,100):50;
+  const y=Number.isFinite(parseFloat(chamada.y))?clamp(parseFloat(chamada.y),0,100):50;
+  let tipX=Number.isFinite(parseFloat(chamada.tipX))?clamp(parseFloat(chamada.tipX),0,100):null;
+  let tipY=Number.isFinite(parseFloat(chamada.tipY))?clamp(parseFloat(chamada.tipY),0,100):null;
+  if(tipX==null||tipY==null||Math.hypot(tipX-x,tipY-y)<0.2){tipX=clamp(x+8,0,100);tipY=clamp(y-6,0,100);}
+  chamada.x=x.toFixed(2);chamada.y=y.toFixed(2);chamada.tipX=tipX.toFixed(2);chamada.tipY=tipY.toFixed(2);return chamada;
+}
+function calloutGeometry(chamada,width,height){
+  normalizeCallout(chamada);
+  const cx=width*parseFloat(chamada.x)/100,cy=height*parseFloat(chamada.y)/100,tipX=width*parseFloat(chamada.tipX)/100,tipY=height*parseFloat(chamada.tipY)/100;
+  const circleR=16,handleR=5,arrowLen=12,arrowHalf=5;let dx=tipX-cx,dy=tipY-cy,dist=Math.hypot(dx,dy);if(dist<0.001){dx=1;dy=0;dist=1;}
+  const ux=dx/dist,uy=dy/dist,lineStartX=cx+ux*circleR,lineStartY=cy+uy*circleR,arrowBaseX=tipX-ux*arrowLen,arrowBaseY=tipY-uy*arrowLen,px=-uy,py=ux;
+  return {cx,cy,tipX,tipY,circleR,handleR,lineStartX,lineStartY,arrowPoints:`${tipX},${tipY} ${arrowBaseX+px*arrowHalf},${arrowBaseY+py*arrowHalf} ${arrowBaseX-px*arrowHalf},${arrowBaseY-py*arrowHalf}`};
+}
+function calloutGroupSvg(chamada,letra,width,height,opts){
+  opts=opts||{};const g=calloutGeometry(chamada,width,height);const cls=['callout-group',opts.selected?'selected':'',opts.incomplete?'incomplete':''].filter(Boolean).join(' ');
+  const handle=opts.interactive?`<circle class="callout-handle" data-role="handle" cx="${g.tipX}" cy="${g.tipY}" r="${g.handleR}"></circle>`:'';const hitRadius=g.circleR+6;
+  return `<g class="${cls}" data-cid="${chamada.id}"><line class="callout-line" x1="${g.lineStartX}" y1="${g.lineStartY}" x2="${g.tipX}" y2="${g.tipY}"></line><polygon class="callout-arrowhead" points="${g.arrowPoints}"></polygon><circle class="callout-circle-shape" cx="${g.cx}" cy="${g.cy}" r="${g.circleR}"></circle><text class="callout-label" x="${g.cx}" y="${g.cy}">${escapeHtml(letra)}</text>${handle}${opts.interactive?`<circle class="callout-circle-hit" data-role="circle" cx="${g.cx}" cy="${g.cy}" r="${hitRadius}"></circle>`:''}</g>`;
+}
+function buildCalloutOverlaySvg(step,width,height,opts){opts=opts||{};const groups=(step.chamadas||[]).map((c,idx)=>c.x==null||c.y==null?'':calloutGroupSvg(c,calloutLetter(idx),width,height,{interactive:!!opts.interactive,selected:c.id===opts.selectedCalloutId,incomplete:!c.pecaId})).join('');return `<svg class="callout-overlay" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" aria-hidden="true">${groups}</svg>`;}
+function renderCalloutLayer(layer,step,opts){
+  opts=opts||{};const img=opts.imgEl||(layer&&layer.parentElement?layer.parentElement.querySelector('img'):null);if(!layer||!img||!step)return;const width=img.clientWidth||img.naturalWidth||0,height=img.clientHeight||img.naturalHeight||0;if(!width||!height){requestAnimationFrame(()=>renderCalloutLayer(layer,step,opts));return;}
+  layer.style.width=width+'px';layer.style.height=height+'px';layer.innerHTML=buildCalloutOverlaySvg(step,width,height,opts);
+  if(opts.interactive){layer.querySelectorAll('[data-role="circle"]').forEach(el=>{el.addEventListener('pointerdown',e=>startCalloutDrag(e,el.closest('g[data-cid]').dataset.cid,'circle'));el.addEventListener('click',e=>{e.stopPropagation();selectCallout(el.closest('g[data-cid]').dataset.cid);});});layer.querySelectorAll('[data-role="handle"]').forEach(el=>{el.addEventListener('pointerdown',e=>startCalloutDrag(e,el.closest('g[data-cid]').dataset.cid,'handle'));el.addEventListener('click',e=>e.stopPropagation());});}
+}
+function renderStageCalloutLayer(){const step=currentStep(),layer=document.getElementById('stageCalloutLayer'),img=document.getElementById('stageImg');if(step&&layer&&img)renderCalloutLayer(layer,step,{interactive:true,selectedCalloutId:state.selectedCalloutId,imgEl:img});}
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+/* ============================================================
+   TOASTS E MODAL DE CONFIRMAÇÃO (substituem alert()/confirm() nativos,
+   que não funcionam dentro de iframes restritos como o visualizador do ChatGPT)
+   ============================================================ */
+function showToast(message, type){
+  const stack = document.getElementById('toastStack');
+  const el = document.createElement('div');
+  el.className = 'toast' + (type ? ' toast-' + type : '');
+  el.textContent = message;
+  stack.appendChild(el);
+  setTimeout(()=>{ el.style.transition='opacity .3s'; el.style.opacity='0'; setTimeout(()=>el.remove(), 300); }, 4600);
+}
+
+function showConfirm(message, onConfirm){
+  const root = document.getElementById('modalRoot');
+  root.innerHTML = `
+    <div class="modal-overlay" id="confirmOverlay">
+      <div class="modal-box">
+        <div class="modal-body">${escapeHtml(message)}</div>
+        <div class="modal-actions">
+          <button class="btn" id="confirmCancel">Cancelar</button>
+          <button class="btn btn-primary" id="confirmOk">Confirmar</button>
+        </div>
+      </div>
+    </div>`;
+  const close = ()=>{ root.innerHTML = ''; };
+  document.getElementById('confirmCancel').addEventListener('click', close);
+  document.getElementById('confirmOverlay').addEventListener('click', (e)=>{ if(e.target.id==='confirmOverlay') close(); });
+  document.getElementById('confirmOk').addEventListener('click', ()=>{ close(); onConfirm(); });
+}
+
+function isInsideChatGPTViewer(){
+  try{ return window.self !== window.top; }catch(e){ return true; }
+}
+
+/* ============================================================
+   PERSISTÊNCIA (localStorage)
+   ============================================================ */
+function save(){
+  try{ localStorage.setItem('montagemXmlState', JSON.stringify(state)); }catch(e){ console.warn('Falha ao salvar localmente', e); }
+}
+
+function defaultState(){
+  return {
+    titulo: '', produtoFinalDescricao: '', pecas: [], passos: [],
+    currentStepId: null, selectedCalloutId: null, selectedPassoId: null, markerMode: false,
+    nextPecaNum: 1, nextPassoNum: 1
+  };
+}
+
+function migrarParaNovoModelo(){
+  // Compatibiliza backups antigos e inicializa os campos do fluxo de IA por imagem.
+  state.passos.forEach(step=>{
+    if(!Array.isArray(step.selectedPecaIds)) step.selectedPecaIds = [];
+    if(!step.partUsage || typeof step.partUsage !== 'object') step.partUsage = {};
+    step.selectedPecaIds.forEach(pid=>{ if(!step.partUsage[pid]) step.partUsage[pid] = 1; });
+    if(typeof step.aiPromptNotes !== 'string') step.aiPromptNotes = '';
+    if(!step.aiAnalysis) step.aiAnalysis = null;
+    if(!step.aiUpdatedAt) step.aiUpdatedAt = null;
+    (step.chamadas||[]).forEach(c=>normalizeCallout(c));
+    if(!Array.isArray(step.passos)){
+      const novasChamadas = [];
+      const novosPassos = [];
+      (step.chamadas||[]).forEach(old=>{
+        // a própria chamada antiga já é um marcador válido no novo formato
+        novasChamadas.push(normalizeCallout({id: old.id, x: old.x, y: old.y, tipX: old.tipX, tipY: old.tipY, pecaId: old.pecaId || ''}));
+        const chamadaIds = [old.id];
+        if(old.relPecaId){
+          let relChamada = novasChamadas.find(c=>c.pecaId === old.relPecaId && c.id !== old.id);
+          if(!relChamada){
+            relChamada = normalizeCallout({id: uid('c'), x: 50, y: 50, tipX: 58, tipY: 44, pecaId: old.relPecaId});
+            novasChamadas.push(relChamada);
+          }
+          chamadaIds.push(relChamada.id);
+        }
+        novosPassos.push({
+          id: uid('pa'), chamadaIds, atividade: old.atividade || 'outro',
+          itemId: old.itemId || '', obs: old.obs || '', descricaoIA: old.descricaoIA || undefined
+        });
+      });
+      step.chamadas = novasChamadas;
+      step.passos = novosPassos;
+    }
+  });
+}
+
+function load(){
+  try{
+    const raw = localStorage.getItem('montagemXmlState');
+    if(raw){ const parsed = JSON.parse(raw); state = Object.assign(state, parsed); }
+    migrarParaNovoModelo();
+    if(typeof state.produtoFinalDescricao !== 'string') state.produtoFinalDescricao = '';
+    state.pecas.forEach(p=>{ if(p.torqueNm===undefined) p.torqueNm=null; });
+  }catch(e){ console.warn('Falha ao carregar', e); }
+}
+
+document.getElementById('btnNovoManual').addEventListener('click', ()=>{
+  showConfirm('Iniciar um novo manual vai limpar os dados desta tela (título, peças, imagens, chamadas e passos).\n\nSe quiser manter o manual atual, baixe o Word/PDF ou salve um backup antes de continuar.\n\nDeseja começar um novo manual agora?', ()=>{
+    clearTimeout(aiGenTimer);
+    state = defaultState();
+    save();
+    renderAll();
+    const pecasTab = document.querySelector('nav.tabs button[data-tab="pecas"]');
+    if(pecasTab) pecasTab.click();
+    showToast('Novo manual iniciado.', 'success');
+  });
+});
+
+/* ============================================================
+   TABS
+   ============================================================ */
+document.querySelectorAll('nav.tabs button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    ['pecas','montagem','preview','exportar'].forEach(t=>{
+      document.getElementById('tab-'+t).style.display = (t===btn.dataset.tab) ? '' : 'none';
+    });
+    if(btn.dataset.tab === 'exportar'){ renderExport(); scheduleAutoGenerate(300); }
+    if(btn.dataset.tab === 'preview'){ renderPreview(); scheduleAutoGenerate(300); }
+  });
+});
+
+document.getElementById('manualTitulo').addEventListener('input', e=>{
+  state.titulo = e.target.value;
+  save(); renderPreview();
+});
+
+document.getElementById('produtoFinalDescricao').addEventListener('input', e=>{
+  state.produtoFinalDescricao = e.target.value;
+  save();
+  scheduleAutoGenerate();
+});
+
+document.getElementById('pecaTipo').addEventListener('change', e=>{
+  const show=e.target.value==='parafuso' || e.target.value==='porca';
+  document.getElementById('pecaTorqueField').style.display=show?'':'none';
+  if(!show) document.getElementById('pecaTorque').value='';
+});
+
+/* ============================================================
+   PEÇAS
+   ============================================================ */
+document.getElementById('btnAddPeca').addEventListener('click', ()=>{
+  const nome = document.getElementById('pecaNome').value.trim();
+  const tipo = document.getElementById('pecaTipo').value;
+  const qtd = parseInt(document.getElementById('pecaQtd').value) || 1;
+  const codigo = document.getElementById('pecaCodigo').value.trim();
+  const torqueRaw = parseFloat(String(document.getElementById('pecaTorque').value||'').replace(',','.'));
+  const torqueNm = (tipo==='parafuso' || tipo==='porca') && Number.isFinite(torqueRaw) && torqueRaw>0 ? torqueRaw : null;
+  if(!nome){ showToast('Informe o nome da peça.', 'error'); return; }
+  state.pecas.push({id: uid('p'), nome, tipo, qtd, codigo, torqueNm});
+  document.getElementById('pecaNome').value='';
+  document.getElementById('pecaCodigo').value='';
+  document.getElementById('pecaQtd').value=1;
+  document.getElementById('pecaTorque').value='';
+  save(); renderPecas(); renderCounts();
+});
+
+function tipoLabel(tipo){
+  return {peca:'Peça', parafuso:'Parafuso', porca:'Porca', tarugo:'Tarugo', outro:'Outro'}[tipo] || tipo;
+}
+
+function renderPecas(){
+  const wrap = document.getElementById('pecasTableWrap');
+  if(state.pecas.length === 0){
+    wrap.innerHTML = '<div class="empty-state">Nenhuma peça cadastrada ainda.</div>';
+    return;
+  }
+  let rows = state.pecas.map(p=>`
+    <tr>
+      <td><span class="tag tag-${p.tipo}">${tipoLabel(p.tipo)}</span></td>
+      <td><strong>${escapeHtml(p.nome)}</strong></td>
+      <td>${p.codigo ? escapeHtml(p.codigo) : '<span style="color:var(--ink-soft)">—</span>'}</td>
+      <td>${p.qtd}</td>
+      <td>${p.torqueNm ? escapeHtml(String(p.torqueNm).replace('.',',')) + ' N·m' : '<span style="color:var(--ink-soft)">—</span>'}</td>
+      <td><button class="icon-btn" onclick="removePeca('${p.id}')" title="Remover">✕</button></td>
+    </tr>
+  `).join('');
+  wrap.innerHTML = `
+    <table>
+      <thead><tr><th>Tipo</th><th>Nome</th><th>Código</th><th>Qtd.</th><th>Torque</th><th></th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+function removePeca(id){
+  const usada = state.passos.some(p=>p.chamadas.some(c=>c.pecaId===id) || p.passos.some(pa=>pa.itemId===id));
+  const doRemove = ()=>{
+    state.pecas = state.pecas.filter(p=>p.id!==id);
+    save(); renderPecas(); renderCounts();
+  };
+  if(usada){
+    showConfirm('Essa peça está referenciada em uma ou mais chamadas/passos. Remover mesmo assim? As referências ficarão inválidas.', doRemove);
+  } else {
+    doRemove();
+  }
+}
+
+/* ============================================================
+   MONTAGEM — IMAGENS / PÁGINAS
+   ============================================================ */
+document.getElementById('btnAddImage').addEventListener('click', ()=> document.getElementById('imageInput').click());
+document.getElementById('imageInput').addEventListener('change', (e)=>{
+  const files = Array.from(e.target.files || []);
+  let pending = files.length;
+  files.forEach(file=>{
+    const reader = new FileReader();
+    reader.onload = (ev)=>{
+      const passo = {
+        id: uid('s'),
+        nome: 'Imagem ' + state.nextPassoNum,
+        imagemData: ev.target.result,
+        selectedPecaIds: [],
+        partUsage: {},
+        aiPromptNotes: '',
+        aiAnalysis: null,
+        aiUpdatedAt: null,
+        chamadas: [],
+        passos: []
+      };
+      state.nextPassoNum++;
+      state.passos.push(passo);
+      if(!state.currentStepId) state.currentStepId = passo.id;
+      pending--;
+      if(pending===0){ save(); renderSteps(); renderStage(); renderPecasDaImagem(); renderAiImageState(); renderCounts(); }
+    };
+    reader.readAsDataURL(file);
+  });
+  e.target.value = '';
+});
+
+function renderSteps(){
+  const list = document.getElementById('stepsList');
+  if(state.passos.length===0){ list.innerHTML=''; return; }
+  list.innerHTML = state.passos.map((p,idx)=>{
+    const pecasOk = Array.isArray(p.selectedPecaIds) && p.selectedPecaIds.length>0;
+    const passosOk = p.passos.length>0 && p.passos.every(pa=> !!pa.descricaoIA || ((pa.chamadaIds||[])[0] && (!ativNeeds(pa.atividade) || pa.itemId)));
+    const complete = pecasOk && passosOk;
+    return `
+    <div class="step-thumb ${p.id===state.currentStepId?'active':''} ${complete?'complete':''}" onclick="selectStep('${p.id}')">
+      <div class="step-thumb-actions">
+        <button class="step-thumb-action" ${idx===0?'disabled':''} onclick="event.stopPropagation();moveImagem('${p.id}',-1)" title="Mover imagem para cima">↑</button>
+        <button class="step-thumb-action" ${idx===state.passos.length-1?'disabled':''} onclick="event.stopPropagation();moveImagem('${p.id}',1)" title="Mover imagem para baixo">↓</button>
+        <button class="step-thumb-action delete" onclick="event.stopPropagation();removeImagem('${p.id}')" title="Excluir imagem/página">✕</button>
+      </div>
+      <img src="${p.imagemData}">
+      <div class="label">
+        <span class="badge">${idx+1}</span>
+        <span style="flex:1;margin-left:6px;color:var(--ink-soft);">${p.passos.length} passo${p.passos.length===1?'':'s'}</span>
+        <span class="status-dot"></span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renumerarImagens(){
+  state.passos.forEach((p,idx)=>{ p.nome = 'Imagem ' + (idx+1); });
+  state.nextPassoNum = state.passos.length + 1;
+}
+
+function moveImagem(id,delta){
+  const idx = state.passos.findIndex(p=>p.id===id);
+  const novo = idx + delta;
+  if(idx<0 || novo<0 || novo>=state.passos.length) return;
+  const [item] = state.passos.splice(idx,1);
+  state.passos.splice(novo,0,item);
+  renumerarImagens();
+  save();
+  renderSteps(); renderStage(); renderPecasDaImagem(); renderChamadasList(); renderPassoList(); renderPassoEditor(); renderPreview(); renderAiImageState(); renderCounts();
+}
+
+function removeImagem(id){
+  const idx = state.passos.findIndex(p=>p.id===id);
+  if(idx<0) return;
+  const pagina = state.passos[idx];
+  const qtdPassos = (pagina.passos||[]).length;
+  const qtdChamadas = (pagina.chamadas||[]).length;
+  const detalhe = [
+    qtdPassos ? `${qtdPassos} passo(s)` : '',
+    qtdChamadas ? `${qtdChamadas} chamada(s)` : ''
+  ].filter(Boolean).join(' e ');
+  const msg = `Excluir a Imagem ${idx+1}${detalhe ? ` e seus ${detalhe}` : ''}?\n\nEsta ação remove a página do manual. Você poderá recuperá-la somente se tiver um backup anterior.`;
+  showConfirm(msg, ()=>{
+    const eraAtual = state.currentStepId===id;
+    state.passos.splice(idx,1);
+    renumerarImagens();
+    if(eraAtual){
+      const prox = state.passos[Math.min(idx,state.passos.length-1)] || null;
+      state.currentStepId = prox ? prox.id : null;
+      state.selectedCalloutId = null;
+      state.selectedPassoId = null;
+    }
+    save();
+    renderSteps(); renderStage(); renderPecasDaImagem(); renderChamadasList(); renderPassoList(); renderPassoEditor(); renderPreview(); renderAiImageState(); renderCounts();
+    showToast('Imagem removida do manual.', 'success');
+  });
+}
+
+function ativNeeds(atividade){
+  const a = ATIVIDADES.find(x=>x.value===atividade);
+  return a ? a.needs : null;
+}
+
+function selectStep(id){
+  state.currentStepId = id;
+  state.selectedCalloutId = null;
+  state.selectedPassoId = null;
+  save(); renderSteps(); renderStage(); renderPecasDaImagem(); renderAiImageState(); renderChamadasList(); renderPassoEditor(); renderPassoList();
+}
+
+function currentStep(){
+  return state.passos.find(p=>p.id===state.currentStepId);
+}
+
+function renderStage(){
+  const stage=document.getElementById('imageStage'),step=currentStep();document.getElementById('stageTitle').textContent=step?step.nome:'Imagem';document.getElementById('stageHint').textContent=step?(state.markerMode?'Clique para criar uma chamada; arraste o círculo para mover toda a chamada e a ponta da seta para ajustar direção e comprimento.':'Ative “Posicionar chamadas” para criar chamadas A, B, C...'):'';
+  if(!step){stage.innerHTML='<div class="stage-empty">Adicione uma vista explodida para começar.</div>';return;}
+  stage.innerHTML=`<div class="stage-inner" id="stageInner"><img src="${step.imagemData}" id="stageImg"><div class="callout-layer" id="stageCalloutLayer"></div></div>`;const img=document.getElementById('stageImg');const ready=()=>{renderStageCalloutLayer();img.style.cursor=state.markerMode?'crosshair':'default';if(state.markerMode)img.addEventListener('click',onStageClick);};if(img.complete)requestAnimationFrame(ready);else img.addEventListener('load',ready,{once:true});
+}
+function startCalloutDrag(e,cid,mode){
+  if(e.button!==undefined&&e.button!==0)return;e.preventDefault();e.stopPropagation();const step=currentStep(),c=step&&step.chamadas.find(x=>x.id===cid),img=document.getElementById('stageImg');if(!c||!img)return;normalizeCallout(c);state.selectedCalloutId=cid;renderStageCalloutLayer();renderChamadasList();const rect=img.getBoundingClientRect(),spx=clamp(((e.clientX-rect.left)/rect.width)*100,0,100),spy=clamp(((e.clientY-rect.top)/rect.height)*100,0,100),sx=parseFloat(c.x),sy=parseFloat(c.y),stx=parseFloat(c.tipX),sty=parseFloat(c.tipY);
+  const move=ev=>{const px=clamp(((ev.clientX-rect.left)/rect.width)*100,0,100),py=clamp(((ev.clientY-rect.top)/rect.height)*100,0,100);if(mode==='handle'){c.tipX=px.toFixed(2);c.tipY=py.toFixed(2);}else{const dx=px-spx,dy=py-spy;c.x=clamp(sx+dx,0,100).toFixed(2);c.y=clamp(sy+dy,0,100).toFixed(2);c.tipX=clamp(stx+dx,0,100).toFixed(2);c.tipY=clamp(sty+dy,0,100).toFixed(2);}normalizeCallout(c);renderStageCalloutLayer();};
+  const up=()=>{document.removeEventListener('pointermove',move);document.removeEventListener('pointerup',up);save();renderChamadasList();renderPreview();renderAiImageState();};document.addEventListener('pointermove',move);document.addEventListener('pointerup',up,{once:true});
+}
+function onStageClick(e){const img=e.target,rect=img.getBoundingClientRect(),x=((e.clientX-rect.left)/rect.width)*100,y=((e.clientY-rect.top)/rect.height)*100,step=currentStep(),c=normalizeCallout({id:uid('c'),x:x.toFixed(2),y:y.toFixed(2),tipX:clamp(x+8,0,100).toFixed(2),tipY:clamp(y-6,0,100).toFixed(2),pecaId:''});step.chamadas.push(c);state.selectedCalloutId=c.id;save();renderStage();renderChamadasList();renderSteps();renderAiImageState();}
+function selectCallout(id){state.selectedCalloutId=id;renderStageCalloutLayer();renderChamadasList();}
+
+function pecaOptions(filterTipo, selectedId){
+  const filtered = filterTipo ? state.pecas.filter(p=>p.tipo===filterTipo) : state.pecas;
+  if(filtered.length===0) return '<option value="">— nenhuma peça deste tipo cadastrada —</option>';
+  return '<option value="">Selecione...</option>' + filtered.map(p=>
+    `<option value="${p.id}" ${p.id===selectedId?'selected':''}>${escapeHtml(p.nome)}${p.codigo?' ('+escapeHtml(p.codigo)+')':''}</option>`
+  ).join('');
+}
+
+
+/* ---- Peças visíveis na vista + fluxo IA ---- */
+function renderPecasDaImagem(){
+  const wrap = document.getElementById('pecasImagemPanel');
+  const step = currentStep();
+  if(!step){ wrap.innerHTML = '<p class="hint">Adicione uma vista explodida para selecionar as peças que aparecem nela.</p>'; return; }
+  if(state.pecas.length===0){ wrap.innerHTML = '<div class="warn-banner">Cadastre primeiro as peças do móvel na aba Peças separadas.</div>'; return; }
+  if(!Array.isArray(step.selectedPecaIds)) step.selectedPecaIds=[];
+  if(!step.partUsage || typeof step.partUsage!=='object') step.partUsage={};
+  const grupos = [
+    ['peca','Peças do móvel'],['parafuso','Parafusos'],['porca','Porcas'],['tarugo','Tarugos'],['outro','Outros itens']
+  ];
+  let html = '';
+  grupos.forEach(([tipo,titulo])=>{
+    const itens = state.pecas.filter(p=>p.tipo===tipo);
+    if(!itens.length) return;
+    html += `<div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;text-transform:uppercase;color:var(--ink-soft);margin:8px 0 5px;">${titulo}</div><div class="part-picker">`;
+    html += itens.map(p=>{
+      const checked = step.selectedPecaIds.includes(p.id);
+      const used = Math.max(1, Math.min(p.qtd, parseInt(step.partUsage[p.id])||1));
+      return `<div class="part-option">
+        <input type="checkbox" class="visible-part-check" data-pid="${p.id}" ${checked?'checked':''} aria-label="Selecionar ${escapeHtml(p.nome)}">
+        <span class="part-main"><strong>${escapeHtml(p.nome)}</strong>${p.codigo?`<small>${escapeHtml(p.codigo)}</small>`:''}${p.torqueNm?`<small>Torque: ${escapeHtml(String(p.torqueNm).replace('.',','))} N·m</small>`:''}</span>
+        <span class="part-usage"><input type="number" class="part-usage-input" data-pid="${p.id}" min="1" max="${p.qtd}" step="1" inputmode="numeric" value="${used}" ${checked?'':'disabled'} title="Quantidade usada nesta vista"><small>usado nesta vista / total ${p.qtd}</small></span>
+      </div>`;
+    }).join('');
+    html += '</div>';
+  });
+  html += `<div class="ai-actions">
+      <button class="btn btn-sm" id="btnSelectAllParts">Selecionar todas</button>
+      <button class="btn btn-sm btn-ghost" id="btnClearParts">Limpar</button>
+    </div>
+    <p class="hint">A quantidade da direita é quantas unidades deste código aparecem ou são usadas <strong>nesta vista</strong>, não a quantidade total do móvel.</p>`;
+  wrap.innerHTML = html;
+  wrap.querySelectorAll('.visible-part-check').forEach(ch=>{
+    ch.addEventListener('change', e=>{
+      const pid = e.target.dataset.pid;
+      const p=state.pecas.find(x=>x.id===pid);
+      if(e.target.checked){
+        if(!step.selectedPecaIds.includes(pid)) step.selectedPecaIds.push(pid);
+        if(!step.partUsage[pid]) step.partUsage[pid]=1;
+      } else {
+        step.selectedPecaIds = step.selectedPecaIds.filter(id=>id!==pid);
+        delete step.partUsage[pid];
+        step.chamadas=(step.chamadas||[]).filter(c=>c.pecaId!==pid);
+      }
+      step.aiAnalysis = null; step.aiUpdatedAt = null;
+      save(); renderPecasDaImagem(); renderStage(); renderChamadasList(); renderSteps(); renderAiImageState(); renderPreview();
+    });
+  });
+  wrap.querySelectorAll('.part-usage-input').forEach(inp=>{
+    const saveUsage = (target, normalize)=>{
+      const pid=target.dataset.pid;
+      const p=state.pecas.find(x=>x.id===pid);
+      if(!p || !step.selectedPecaIds.includes(pid)) return;
+      const raw=String(target.value).trim();
+      if(raw==='') return;
+      let v=parseInt(raw,10);
+      if(!Number.isFinite(v)) return;
+      v=Math.max(1,Math.min(p.qtd,v));
+      if(normalize) target.value=v;
+      step.partUsage[pid]=v;
+      step.aiAnalysis=null; step.aiUpdatedAt=null;
+      save(); renderAiImageState();
+    };
+    // Salva enquanto o usuário digita; ao sair do campo, normaliza entre 1 e o total cadastrado.
+    inp.addEventListener('input', e=>saveUsage(e.target, false));
+    inp.addEventListener('change', e=>saveUsage(e.target, true));
+    inp.addEventListener('blur', e=>{
+      if(String(e.target.value).trim()==='') e.target.value=(step.partUsage[e.target.dataset.pid]||1);
+      saveUsage(e.target, true);
+    });
+  });
+  const all = document.getElementById('btnSelectAllParts');
+  if(all) all.addEventListener('click', ()=>{ step.selectedPecaIds = state.pecas.map(p=>p.id); state.pecas.forEach(p=>{ if(!step.partUsage[p.id]) step.partUsage[p.id]=1; }); step.aiAnalysis=null; save(); renderPecasDaImagem(); renderSteps(); renderAiImageState(); });
+  const clear = document.getElementById('btnClearParts');
+  if(clear) clear.addEventListener('click', ()=>{ step.selectedPecaIds = []; step.partUsage={}; step.chamadas=[]; step.aiAnalysis=null; save(); renderPecasDaImagem(); renderStage(); renderChamadasList(); renderSteps(); renderAiImageState(); });
+}
+
+function renderAiImageState(){
+  renderCurrentStepValidation();
+  const status = document.getElementById('aiImageStatus');
+  const summary = document.getElementById('aiAnalysisSummary');
+  const step = currentStep();
+  const promptBox = document.getElementById('aiPromptNotes');
+  if(promptBox && document.activeElement!==promptBox) promptBox.value = step ? (step.aiPromptNotes||'') : '';
+  if(!status || !summary) return;
+  if(!step){ status.className='ai-status-box'; status.textContent='Adicione uma vista explodida.'; summary.innerHTML=''; return; }
+  const selectedIds = step.selectedPecaIds||[];
+  if(!selectedIds.length){ status.className='ai-status-box warn'; status.textContent='Selecione ao menos uma peça que aparece na vista antes de analisar.'; summary.innerHTML=''; return; }
+  const missingCallouts = selectedIds.filter(pid=>!(step.chamadas||[]).some(c=>c.pecaId===pid));
+  if(missingCallouts.length){
+    const nomes=missingCallouts.map(pid=>state.pecas.find(p=>p.id===pid)).filter(Boolean).map(p=>p.nome);
+    status.className='ai-status-box warn';
+    status.textContent=`Faltam chamadas para ${missingCallouts.length} item(ns): ${nomes.join(', ')}.`;
+    summary.innerHTML=''; return;
+  }
+  if(step.aiAnalysis){
+    status.className='ai-status-box ok';
+    status.textContent=`Análise concluída: ${step.passos.length} instrução(ões) gerada(s) com base na imagem, quantidades desta vista e ${step.chamadas.length} chamada(s).`;
+    const warnings = (step.aiAnalysis.uncertainties||[]).map(x=>`<li>${escapeHtml(x)}</li>`).join('');
+    summary.innerHTML = `<div class="ai-analysis-summary"><strong>Leitura da vista:</strong> ${escapeHtml(step.aiAnalysis.summary||'Análise concluída.')}${warnings?`<div style="margin-top:7px;color:var(--safety);"><strong>Pontos para revisar:</strong><ul style="margin:4px 0 0 18px;padding:0;">${warnings}</ul></div>`:''}</div>`;
+  } else {
+    status.className='ai-status-box';
+    status.textContent=`Pronto para analisar: ${selectedIds.length} item(ns) selecionado(s) e todas as chamadas obrigatórias posicionadas.`;
+    summary.innerHTML='';
+  }
+}
+
+function pecaNames(ids){
+  return (ids||[]).map(id=>state.pecas.find(p=>p.id===id)).filter(Boolean).map(p=>p.nome);
+}
+
+document.getElementById('btnToggleMarkerMode').addEventListener('click', ()=>{
+  state.markerMode = !state.markerMode;
+  const btn = document.getElementById('btnToggleMarkerMode');
+  btn.textContent = state.markerMode ? 'Posicionar chamadas: ligado' : 'Posicionar chamadas: desligado';
+  if(state.markerMode) showToast('Clique na imagem para criar A, B, C... Depois associe cada letra a uma peça.', 'success');
+  save(); renderStage();
+});
+
+
+function calloutPecaOptions(step, selectedId){
+  const ids=(step && step.selectedPecaIds)||[];
+  const filtered=ids.map(id=>state.pecas.find(p=>p.id===id)).filter(Boolean);
+  if(filtered.length===0) return '<option value="">— selecione primeiro as peças da vista —</option>';
+  return '<option value="">Selecione...</option>' + filtered.map(p=>
+    `<option value="${p.id}" ${p.id===selectedId?'selected':''}>${escapeHtml(p.nome)}${p.codigo?' ('+escapeHtml(p.codigo)+')':''}</option>`
+  ).join('');
+}
+/* ---- Chamadas (marcadores) ---- */
+function renderChamadasList(){
+  const wrap = document.getElementById('chamadasPanelBody');
+  const step = currentStep();
+  if(!step){ wrap.innerHTML = '<p class="hint">Adicione uma imagem para começar.</p>'; return; }
+  if(step.chamadas.length===0){
+    wrap.innerHTML = '<p class="hint">Clique na imagem para marcar uma peça. Você pode marcar várias antes de criar os passos.</p>';
+    return;
+  }
+  wrap.innerHTML = step.chamadas.map((c,idx)=>{
+    const letra = calloutLetter(idx);
+    const semPosicao = (c.x==null) ? ' <span style="color:var(--ink-soft);font-size:10px;">(sem marcador na imagem)</span>' : '';
+    return `<div class="chamada-row ${c.id===state.selectedCalloutId?'selected':''}">
+      <span class="letra-badge">${letra}</span>
+      <select data-cid="${c.id}" class="chamada-peca-select">${calloutPecaOptions(step, c.pecaId)}</select>
+      <button class="icon-btn" onclick="removeChamada('${c.id}')" title="Remover">✕</button>
+    </div>${semPosicao ? `<div class="hint" style="margin:-4px 0 8px 32px;">${semPosicao}</div>` : ''}`;
+  }).join('') + '<p class="hint">Ative “Posicionar chamadas” e clique na imagem para adicionar mais letras. Arraste o círculo para mover a chamada inteira ou a ponta da seta para ajustar direção e comprimento.</p>';
+
+  wrap.querySelectorAll('.chamada-peca-select').forEach(sel=>{
+    sel.addEventListener('change', e=>{
+      const cid = e.target.dataset.cid;
+      const st = currentStep();
+      const chamada = st.chamadas.find(c=>c.id===cid);
+      chamada.pecaId = e.target.value;
+      st.passos.forEach(pa=>{ if(pa.chamadaIds.includes(cid)) delete pa.descricaoIA; });
+      step.aiAnalysis=null; step.aiUpdatedAt=null; save(); renderStage(); renderSteps(); renderPassoList(); renderPassoEditor(); renderPreview(); renderAiImageState(); scheduleAutoGenerate();
+    });
+  });
+}
+
+function removeChamada(id){
+  const step = currentStep();
+  const usadoEm = step.passos.filter(pa=>pa.chamadaIds.includes(id));
+  const doRemove = ()=>{
+    step.chamadas = step.chamadas.filter(c=>c.id!==id);
+    step.passos.forEach(pa=>{ pa.chamadaIds = pa.chamadaIds.filter(cid=>cid!==id); delete pa.descricaoIA; });
+    if(state.selectedCalloutId===id) state.selectedCalloutId = null;
+    step.aiAnalysis=null; step.aiUpdatedAt=null; save(); renderStage(); renderChamadasList(); renderPassoList(); renderPassoEditor(); renderSteps(); renderPreview(); renderAiImageState(); scheduleAutoGenerate(500);
+  };
+  if(usadoEm.length>0){
+    showConfirm(`Essa chamada é usada em ${usadoEm.length} passo(s). Remover mesmo assim? Os passos ficarão sem essa referência.`, doRemove);
+  } else {
+    doRemove();
+  }
+}
+
+/* ---- Passos (instruções que combinam chamadas) ---- */
+function chamadaLabel(chamadaId, step){
+  const idx = step.chamadas.findIndex(c=>c.id===chamadaId);
+  if(idx === -1) return '[chamada removida]';
+  const chamada = step.chamadas[idx];
+  const peca = state.pecas.find(p=>p.id===chamada.pecaId);
+  return (peca ? peca.nome : '[peça não definida]') + ' (' + calloutLetter(idx) + ')';
+}
+
+function chamadaOptions(step, selectedId, excludeId){
+  const opts = step.chamadas.map((c,idx)=>({
+    id: c.id,
+    label: calloutLetter(idx) + ' — ' + (state.pecas.find(p=>p.id===c.pecaId) ? state.pecas.find(p=>p.id===c.pecaId).nome : '(peça não definida)')
+  })).filter(o=>o.id!==excludeId);
+  if(opts.length===0) return '<option value="">— nenhuma chamada disponível —</option>';
+  return '<option value="">Selecione...</option>' + opts.map(o=>
+    `<option value="${o.id}" ${o.id===selectedId?'selected':''}>${escapeHtml(o.label)}</option>`
+  ).join('');
+}
+
+document.getElementById('btnNovoPasso').addEventListener('click', ()=>{
+  const step = currentStep();
+  if(!step){ showToast('Adicione uma imagem primeiro.', 'error'); return; }
+  const passo = {id: uid('pa'), pecaIds:[], chamadaIds:[], atividade:'outro', itemId:'', obs:'', descricaoIA:''};
+  step.passos.push(passo);
+  state.selectedPassoId = passo.id;
+  save(); renderPassoEditor(); renderPassoList(); renderSteps();
+});
+
+function selectPasso(id){
+  state.selectedPassoId = id;
+  const details = document.getElementById('manualAdvancedEditor');
+  if(details) details.open = true;
+  renderPassoEditor(); renderPassoList();
+}
+
+function renderPassoEditor(){
+  const body = document.getElementById('passoEditorBody');
+  const step = currentStep();
+  const passo = step ? step.passos.find(p=>p.id===state.selectedPassoId) : null;
+  if(!passo){
+    body.innerHTML = '<div class="no-selection">Marque as chamadas na imagem primeiro. Depois, clique em "+ Novo passo" para combiná-las numa instrução.</div>';
+    return;
+  }
+  const idx = step.passos.findIndex(p=>p.id===passo.id) + 1;
+  const needs = ativNeeds(passo.atividade);
+  passo.chamadaIds = passo.chamadaIds || [];
+  passo.pecaIds = passo.pecaIds || [];
+  const principalId = passo.chamadaIds[0] || '';
+  const relId = passo.chamadaIds[1] || '';
+  body.innerHTML = `
+    <p class="hint" style="margin-top:0;">Editando passo ${idx}${passo.source==='ai'?' · gerado pela IA':''}</p>
+    <div class="field">
+      <label>Texto da instrução</label>
+      <textarea id="ppDescricao" rows="3" placeholder="Instrução de montagem">${escapeHtml(passo.descricaoIA||'')}</textarea>
+      <p class="hint">Você pode revisar livremente o texto gerado pela IA.</p>
+    </div>
+    <div class="field">
+      <label>Chamada principal</label>
+      <select id="ppPrincipal">${chamadaOptions(step, principalId, relId)}</select>
+    </div>
+    <div class="field">
+      <label>Chamada relacionada (opcional)</label>
+      <select id="ppRel">${chamadaOptions(step, relId, principalId)}</select>
+      <p class="hint">A peça que recebe a ação — ex: encaixar a Tampa (A) <strong>na</strong> Caneta (B).</p>
+    </div>
+    <div class="field">
+      <label>Atividade</label>
+      <select id="ppAtividade">${ATIVIDADES.map(a=>`<option value="${a.value}" ${a.value===passo.atividade?'selected':''}>${a.label}</option>`).join('')}</select>
+    </div>
+    ${needs ? `
+    <div class="field">
+      <label>${needs==='parafuso'?'Parafuso utilizado':'Tarugo utilizado'}</label>
+      <select id="ppItem">${pecaOptions(needs, passo.itemId)}</select>
+    </div>` : ''}
+    <div class="field">
+      <label>Observação (opcional)</label>
+      <textarea id="ppObs" rows="2" placeholder="Ex: alinhar antes de fixar">${escapeHtml(passo.obs||'')}</textarea>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-danger" id="ppRemove" style="flex:1;">Remover passo</button>
+    </div>
+  `;
+
+  document.getElementById('ppDescricao').addEventListener('input', e=>{ passo.descricaoIA=e.target.value; save(); renderPassoList(); renderPreview(); });
+
+  function syncChamadas(){
+    const p = document.getElementById('ppPrincipal').value;
+    const r = document.getElementById('ppRel').value;
+    passo.chamadaIds = [p, r].filter(Boolean);
+    delete passo.descricaoIA;
+    save(); renderPassoEditor(); renderPassoList(); renderPreview(); scheduleAutoGenerate();
+  }
+
+  document.getElementById('ppPrincipal').addEventListener('change', syncChamadas);
+  document.getElementById('ppRel').addEventListener('change', syncChamadas);
+  document.getElementById('ppAtividade').addEventListener('change', e=>{
+    passo.atividade = e.target.value; passo.itemId=''; delete passo.descricaoIA;
+    save(); renderPassoEditor(); renderPassoList(); renderPreview(); scheduleAutoGenerate();
+  });
+  const itemSel = document.getElementById('ppItem');
+  if(itemSel) itemSel.addEventListener('change', e=>{
+    passo.itemId = e.target.value; delete passo.descricaoIA;
+    save(); renderPassoList(); renderPreview(); scheduleAutoGenerate();
+  });
+  document.getElementById('ppObs').addEventListener('input', e=>{
+    passo.obs = e.target.value; delete passo.descricaoIA;
+    save(); scheduleAutoGenerate(2200);
+  });
+  document.getElementById('ppRemove').addEventListener('click', ()=>removePasso(passo.id));
+}
+
+function removePasso(id){
+  const step = currentStep();
+  if(!step) return;
+  const idx = step.passos.findIndex(p=>p.id===id);
+  if(idx<0) return;
+  const trecho = String(instrucaoTexto(step.passos[idx],step)||'').trim();
+  const resumo = trecho.length>90 ? trecho.slice(0,87)+'...' : trecho;
+  showConfirm(`Remover o passo ${idx+1}${resumo ? ` — “${resumo}”` : ''}?\n\nOs demais passos serão renumerados automaticamente.`, ()=>{
+    step.passos.splice(idx,1);
+    if(state.selectedPassoId===id) state.selectedPassoId=null;
+    step.aiAnalysis=null; step.aiUpdatedAt=null;
+    save(); renderPassoEditor(); renderPassoList(); renderSteps(); renderPreview(); renderAiImageState(); scheduleAutoGenerate(500);
+    showToast('Passo removido.', 'success');
+  });
+}
+
+function movePasso(id,delta){
+  const step = currentStep();
+  if(!step) return;
+  const idx = step.passos.findIndex(p=>p.id===id);
+  const novo = idx + delta;
+  if(idx<0 || novo<0 || novo>=step.passos.length) return;
+  const [item] = step.passos.splice(idx,1);
+  step.passos.splice(novo,0,item);
+  step.aiAnalysis=null; step.aiUpdatedAt=null;
+  save(); renderPassoEditor(); renderPassoList(); renderSteps(); renderPreview(); renderAiImageState();
+}
+
+function renderPassoList(){
+  const wrap = document.getElementById('passoList');
+  const step = currentStep();
+  if(!step || step.passos.length===0){ wrap.innerHTML = '<p class="hint">Nenhum passo criado ainda nesta imagem.</p>'; return; }
+  wrap.innerHTML = step.passos.map((pa,idx)=>{
+    const ativ = ATIVIDADES.find(a=>a.value===pa.atividade);
+    const callRefs = (pa.chamadaIds||[]).length ? pa.chamadaIds.map(cid=>chamadaLabel(cid, step)).join(' → ') : '';
+    const aiRefs = pecaNames(pa.pecaIds||[]).join(' + ');
+    const refs = callRefs || aiRefs || 'Instrução';
+    const conf = pa.confidence ? `<span class="confidence confidence-${pa.confidence}">${pa.confidence}</span>` : '';
+    const pageIndex=state.passos.findIndex(s=>s.id===step.id);
+    const vIssues=validateStep(step,pa,pageIndex,idx);
+    const vRules=[...new Set(vIssues.map(v=>v.rule))];
+    const vBadges=vRules.length?`<span class="validation-step-badges">${vRules.map(rule=>{const sev=vIssues.some(v=>v.rule===rule&&v.severity==='error')?'':' warning';return `<span class="validation-step-badge${sev}">${rule}</span>`;}).join('')}</span>`:'';
+    return `<div class="callout-list-item ${pa.id===state.selectedPassoId?'selected':''}" onclick="selectPasso('${pa.id}')">
+      <span class="num">${idx+1}</span>
+      <span class="desc"><strong>${escapeHtml(instrucaoTexto(pa, step))}${vBadges}</strong><small>${escapeHtml(refs)} · ${ativ?ativ.label:'Instrução'}${conf}</small></span>
+      <span class="step-inline-actions">
+        <button class="step-inline-action" ${idx===0?'disabled':''} onclick="event.stopPropagation();movePasso('${pa.id}',-1)" title="Mover passo para cima">↑</button>
+        <button class="step-inline-action" ${idx===step.passos.length-1?'disabled':''} onclick="event.stopPropagation();movePasso('${pa.id}',1)" title="Mover passo para baixo">↓</button>
+        <button class="step-inline-action" onclick="event.stopPropagation();selectPasso('${pa.id}')" title="Editar passo">✎</button>
+        <button class="step-inline-action delete" onclick="event.stopPropagation();removePasso('${pa.id}')" title="Excluir passo">✕</button>
+      </span>
+    </div>`;
+  }).join('');
+}
+
+/* ============================================================
+   VALIDAÇÃO AUTOMÁTICA — regras determinísticas da skill R1–R6
+   ============================================================ */
+const IMPERATIVE_STARTS = new Set([
+  'posicione','instale','fixe','remova','aperte','alinhe','encaixe','introduza','insira',
+  'monte','conecte','prenda','coloque','apoie','gire','rosqueie','parafuse','junte','cole',
+  'bata','repita','solte','abra','feche','eleve','abaixe','ajuste','deslize','acople','engate',
+  'trave','destrave','encaixe','aplique','pressione','puxe','empurre','levante','abaixe',
+  'encaixe','encaixe','centralize','oriente','vire','encaixe','encaixe','encaixe'
+]);
+
+function normalizeTextForValidation(v){
+  return String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+}
+
+function calloutById(step, id){ return (step.chamadas||[]).find(c=>c.id===id); }
+function calloutIndexById(step, id){ return (step.chamadas||[]).findIndex(c=>c.id===id); }
+function calloutLetterById(step, id){ const i=calloutIndexById(step,id); return i>=0?calloutLetter(i):null; }
+
+function legendTextForCallout(step, c, idx){
+  const p = state.pecas.find(x=>x.id===c.pecaId);
+  const letra = calloutLetter(idx);
+  if(!p) return `${letra}—[peça não definida]`;
+  const extras=[];
+  if(p.codigo) extras.push(`cód. ${p.codigo}`);
+  if(p.torqueNm) extras.push(`torque ${String(p.torqueNm).replace('.',',')} N·m`);
+  return `${letra}—${p.nome}${extras.length?', '+extras.join(', '):''}`;
+}
+
+function renderLegendHtml(step){
+  if(!step || !(step.chamadas||[]).length) return '';
+  return `<div class="preview-legend">${step.chamadas.map((c,idx)=>{
+    const invalid=!c.pecaId || !state.pecas.some(p=>p.id===c.pecaId);
+    return `<span class="preview-legend-item ${invalid?'invalid':''}"><span class="preview-legend-letter">${escapeHtml(calloutLetter(idx))}</span>—${escapeHtml(legendTextForCallout(step,c,idx).replace(/^.*?—/,''))}</span>`;
+  }).join('')}</div>`;
+}
+
+function detectSpecificationTokens(text, step){
+  const found=[];
+  const value=String(text||'');
+  const patterns=[
+    {label:'medida/rosca', re:/\bM\s*\d+(?:[x×]\s*\d+(?:[.,]\d+)?)?\b/gi},
+    {label:'dimensão', re:/\b\d+(?:[.,]\d+)?\s*(?:mm|cm|pol(?:egadas?)?|in)\b/gi},
+    {label:'dimensão composta', re:/\b\d+(?:[.,]\d+)?\s*[x×]\s*\d+(?:[.,]\d+)?(?:\s*[x×]\s*\d+(?:[.,]\d+)?)?\s*(?:mm|cm)?\b/gi}
+  ];
+  patterns.forEach(({label,re})=>{
+    let m; while((m=re.exec(value))!==null){ found.push(`${label}: “${m[0]}”`); if(m.index===re.lastIndex) re.lastIndex++; }
+  });
+  // Código/SKU cadastrado é especificação e não deve aparecer no step.
+  (state.pecas||[]).forEach(p=>{
+    if(p.codigo && value.toLowerCase().includes(String(p.codigo).toLowerCase())) found.push(`código: “${p.codigo}”`);
+  });
+  return [...new Set(found)];
+}
+
+function validateStep(step, pa, pageIndex, stepIndex){
+  const issues=[];
+  const text=String(instrucaoTexto(pa,step)||'').trim();
+  const location={pageIndex,stepIndex,stepId:pa.id,pageId:step.id};
+  if(!text){
+    issues.push({...location,severity:'error',rule:'R5',message:'O step está sem texto de ação.'});
+    return issues;
+  }
+
+  // R1: referências cadastradas precisam existir e aparecer no texto com a letra.
+  const linkedIds=[...(pa.chamadaIds||[])];
+  linkedIds.forEach(cid=>{
+    const c=calloutById(step,cid);
+    if(!c){ issues.push({...location,severity:'error',rule:'R1',message:'O step referencia uma chamada que não existe mais na imagem.'}); return; }
+    const letter=calloutLetterById(step,cid);
+    if(letter && !new RegExp(`\\(${letter.replace(/[.*+?^${}()|[\\]\\]/g,'\\$&')}\\)`,`i`).test(text)){
+      issues.push({...location,severity:'error',rule:'R1',message:`A chamada (${letter}) está vinculada ao step, mas não aparece no texto.`});
+    }
+    if(!c.pecaId || !state.pecas.some(p=>p.id===c.pecaId)){
+      issues.push({...location,severity:'error',rule:'R1',message:`A chamada (${letter||'?'}) não possui componente válido associado.`});
+    }
+  });
+  // Letras escritas no texto precisam existir nesta imagem.
+  const lettersInText=[...text.matchAll(/\(([A-Z]{1,3})\)/g)].map(m=>m[1]);
+  const validLetters=new Set((step.chamadas||[]).map((_,i)=>calloutLetter(i)));
+  lettersInText.forEach(letter=>{ if(!validLetters.has(letter)) issues.push({...location,severity:'error',rule:'R1',message:`O texto cita a chamada (${letter}), mas ela não existe nesta imagem.`}); });
+
+  // Peças ligadas semanticamente ao passo precisam ter pelo menos uma chamada na imagem.
+  const referencedPieceIds=new Set([...(pa.pecaIds||[]), ...(pa.itemId?[pa.itemId]:[])]);
+  referencedPieceIds.forEach(pid=>{
+    const piece=state.pecas.find(p=>p.id===pid); if(!piece) return;
+    const callouts=(step.chamadas||[]).map((c,i)=>({c,i})).filter(x=>x.c.pecaId===pid);
+    if(!callouts.length){
+      issues.push({...location,severity:'error',rule:'R1',message:`O componente “${piece.nome}” participa do step, mas não possui chamada nesta imagem.`});
+      return;
+    }
+    const mentioned=callouts.some(x=>new RegExp(`\(${calloutLetter(x.i)}\)`,`i`).test(text));
+    if(!mentioned) issues.push({...location,severity:'error',rule:'R1',message:`O componente “${piece.nome}” participa do step, mas nenhuma de suas chamadas aparece no texto.`});
+  });
+
+  // R2: medidas, roscas e códigos não pertencem ao texto do step.
+  const specs=detectSpecificationTokens(text,step);
+  if(specs.length) issues.push({...location,severity:'error',rule:'R2',message:`Há especificação técnica no texto do step (${specs.join('; ')}). Mova-a para a legenda.`});
+
+  // R4/R5: heurística determinística; casos ambíguos ficam como aviso, não bloqueio.
+  const first=(normalizeTextForValidation(text).match(/^[a-zç]+/)||[])[0]||'';
+  if(!IMPERATIVE_STARTS.has(first)){
+    issues.push({...location,severity:'warning',rule:'R4',message:`O step não parece começar com verbo no imperativo (“${text.split(/\s+/)[0]||''}”). Revise a redação.`});
+  }
+  if(/^(nota|atenção|atencao|observação|observacao)\b/i.test(text) || /\b(?:é|são|possui|tem)\b/i.test(text) && !IMPERATIVE_STARTS.has(first)){
+    issues.push({...location,severity:'warning',rule:'R5',message:'O texto parece descritivo/não operacional. Considere transformá-lo em NOTA em vez de step.'});
+  }
+
+  // R6: baixa confiança é uma pendência semântica, não um erro determinístico.
+  if(pa.confidence==='baixa') issues.push({...location,severity:'warning',rule:'R6',message:'A IA marcou este step com confiança baixa; requer revisão técnica da sequência física.'});
+  return issues;
+}
+
+function validatePage(step,pageIndex){
+  const issues=[];
+  const selectedIds=step.selectedPecaIds||[];
+  selectedIds.forEach(pid=>{
+    const p=state.pecas.find(x=>x.id===pid); if(!p) return;
+    if(!(step.chamadas||[]).some(c=>c.pecaId===pid)) issues.push({severity:'error',rule:'R1',pageIndex,pageId:step.id,message:`“${p.nome}” está selecionado para a vista, mas não possui chamada.`});
+  });
+  (step.chamadas||[]).forEach((c,idx)=>{
+    const letter=calloutLetter(idx);
+    if(c.x==null || c.y==null || c.tipX==null || c.tipY==null) issues.push({severity:'error',rule:'R3',pageIndex,pageId:step.id,message:`A chamada (${letter}) está sem posição completa na imagem.`});
+    if(!c.pecaId || !state.pecas.some(p=>p.id===c.pecaId)) issues.push({severity:'error',rule:'R3',pageIndex,pageId:step.id,message:`A chamada (${letter}) não pode gerar legenda porque não possui peça válida associada.`});
+  });
+  (step.passos||[]).forEach((pa,idx)=>issues.push(...validateStep(step,pa,pageIndex,idx)));
+  (step.aiAnalysis?.uncertainties||[]).forEach(msg=>issues.push({severity:'warning',rule:'R6',pageIndex,pageId:step.id,message:`Pendência da análise visual: ${msg}`}));
+  return issues;
+}
+
+function validateManual(){
+  const issues=[];
+  state.passos.forEach((step,pageIndex)=>issues.push(...validatePage(step,pageIndex)));
+  return issues;
+}
+
+function validationCounts(issues){
+  return {
+    errors:issues.filter(i=>i.severity==='error').length,
+    warnings:issues.filter(i=>i.severity==='warning').length
+  };
+}
+
+function renderValidationPanel(target, issues, opts){
+  if(!target) return;
+  opts=opts||{};
+  const counts=validationCounts(issues);
+  const title=opts.title||'Validação automática da skill';
+  const max=opts.max||20;
+  if(!issues.length){
+    target.innerHTML=`<div class="validation-panel"><h3>${escapeHtml(title)}</h3><div class="validation-summary"><span class="validation-pill ok">0 pendências determinísticas</span></div><div class="hint">R1–R5 passaram nas verificações automáticas disponíveis. A coerência física de R6 ainda requer a análise visual/validação técnica.</div></div>`;
+    return;
+  }
+  const items=issues.slice(0,max).map(i=>{
+    const where=[]; if(Number.isInteger(i.pageIndex)) where.push(`Imagem ${i.pageIndex+1}`); if(Number.isInteger(i.stepIndex)) where.push(`step ${i.stepIndex+1}`);
+    return `<li><span class="validation-rule">${escapeHtml(i.rule)}</span>${where.length?`<strong>${escapeHtml(where.join(' · '))}:</strong> `:''}${escapeHtml(i.message)}</li>`;
+  }).join('');
+  target.innerHTML=`<div class="validation-panel"><h3>${escapeHtml(title)}</h3><div class="validation-summary"><span class="validation-pill error">${counts.errors} erro(s)</span><span class="validation-pill warning">${counts.warnings} aviso(s)</span></div><ul class="validation-list">${items}</ul>${issues.length>max?`<div class="hint">+ ${issues.length-max} pendência(s) adicionais.</div>`:''}</div>`;
+}
+
+function renderCurrentStepValidation(){
+  const box=document.getElementById('aiValidationSummary');
+  const step=currentStep();
+  if(!box) return;
+  if(!step){box.innerHTML='';return;}
+  const pageIndex=state.passos.findIndex(s=>s.id===step.id);
+  renderValidationPanel(box,validatePage(step,pageIndex),{title:'Validação automática desta vista',max:10});
+}
+
+/* ============================================================
+   CONTADORES
+   ============================================================ */
+function renderCounts(){
+  document.getElementById('countPecas').textContent = state.pecas.length;
+  document.getElementById('countPassos').textContent = state.passos.length;
+}
+
+/* ============================================================
+   SERVIDOR OPENAI (a chave fica no backend, não neste HTML)
+   ============================================================ */
+const AI_SERVER_STORAGE = 'montagemXmlOpenAiServer';
+function getAiServer(){
+  try{ return localStorage.getItem(AI_SERVER_STORAGE) || 'http://localhost:3000/api/analyze'; }catch(e){ return 'http://localhost:3000/api/analyze'; }
+}
+function setAiServer(url){ try{ localStorage.setItem(AI_SERVER_STORAGE, url); }catch(e){} }
+document.getElementById('aiServerInput').value = getAiServer();
+document.getElementById('btnSalvarAiServer').addEventListener('click', ()=>{
+  const val = document.getElementById('aiServerInput').value.trim() || 'http://localhost:3000/api/analyze';
+  setAiServer(val);
+  showToast('Endereço do servidor de IA salvo.', 'success');
+});
+
+/* ============================================================
+   TEXTO DE INSTRUÇÃO — rascunho automático (usado até a IA gerar o texto final)
+   ============================================================ */
+function instrucaoTexto(passo, step){
+  if(passo.descricaoIA) return passo.descricaoIA;
+  const refs = (passo.chamadaIds||[]).map(cid=>chamadaLabel(cid, step));
+  if(!refs.length && (passo.pecaIds||[]).length){ refs.push(...pecaNames(passo.pecaIds)); }
+  const principal = refs[0] || '[peça não definida]';
+  const relacionadas = refs.slice(1);
+  const item = state.pecas.find(p=>p.id===passo.itemId);
+  const nomeItem = item ? item.nome : null;
+  let texto;
+  switch(passo.atividade){
+    case 'parafusar':
+      texto = `Parafuse ${principal}` + (relacionadas.length ? ` em ${relacionadas.join(' e ')}` : '') + (nomeItem ? ` utilizando ${nomeItem}` : '');
+      break;
+    case 'apertar':
+      texto = `Aperte ${principal}` + (nomeItem ? ` utilizando ${nomeItem}` : '');
+      break;
+    case 'colar':
+      texto = `Cole ${principal}` + (relacionadas.length ? ` em ${relacionadas.join(' e ')}` : '');
+      break;
+    case 'juntar':
+      texto = `Junte ${principal}` + (relacionadas.length ? ` a ${relacionadas.join(' e ')}` : '') + (nomeItem ? ` utilizando ${nomeItem}` : '');
+      break;
+    case 'encaixar':
+      texto = `Encaixe ${principal}` + (relacionadas.length ? ` em ${relacionadas.join(' e ')}` : '');
+      break;
+    case 'martelar':
+      texto = `Bata ${principal}` + (relacionadas.length ? ` até encaixar em ${relacionadas.join(' e ')}` : '') + ' com martelo';
+      break;
+    default:
+      texto = relacionadas.length ? `Posicione ${principal} em ${relacionadas.join(' e ')}` : `Posicione ${principal}`;
+  }
+  if(passo.obs) texto += ` (${passo.obs})`;
+  return texto;
+}
+
+/* ============================================================
+   PRÉ-VISUALIZAÇÃO (folha limpa)
+   ============================================================ */
+function renderPreview(){
+  renderCurrentStepValidation();
+  const container=document.getElementById('previewContent'),titulo=state.titulo&&state.titulo.trim()?state.titulo:'Manual de montagem sem título';
+  renderValidationPanel(document.getElementById('previewValidation'),validateManual(),{title:'Validação automática antes da exportação',max:16});
+  let html=`<h1 class="preview-title">${escapeHtml(titulo)}</h1>`;
+  if(state.produtoFinalDescricao&&state.produtoFinalDescricao.trim())html+=`<p style="margin:-18px 0 22px;color:var(--ink-soft);font-size:12.5px;line-height:1.45;"><strong>Produto final:</strong> ${escapeHtml(state.produtoFinalDescricao.trim())}</p>`;
+  if(state.passos.length===0)html+='<div class="empty-state">Adicione imagens e passos na aba Montagem para ver a prévia aqui.</div>';else state.passos.forEach(s=>{
+    const items=s.passos.length?s.passos.map((pa,pidx)=>{const badge=pa.descricaoIA?'<span class="badge-ia">IA</span>':'<span class="badge-draft">rascunho</span>';return `<li><span class="step-num">${pidx+1}.</span>${escapeHtml(instrucaoTexto(pa,s))}${badge}</li>`;}).join(''):'<li class="empty-hint">Nenhum passo definido nesta imagem.</li>';
+    html+=`<div class="preview-block"><div><div class="preview-image-inner" data-preview-step-id="${s.id}"><img src="${s.imagemData}"><div class="callout-layer preview-callout-layer" data-preview-step-id="${s.id}"></div></div>${renderLegendHtml(s)}</div><ol class="preview-steps">${items}</ol></div>`;
+  });
+  container.innerHTML=html;
+  requestAnimationFrame(()=>{container.querySelectorAll('.preview-callout-layer').forEach(layer=>{const step=state.passos.find(s=>s.id===layer.dataset.previewStepId),img=layer.parentElement.querySelector('img');if(step&&img)renderCalloutLayer(layer,step,{interactive:false,imgEl:img});});});
+}
+
+document.getElementById('aiPromptNotes').addEventListener('input', e=>{
+  const step=currentStep();
+  if(!step) return;
+  step.aiPromptNotes=e.target.value;
+  step.aiAnalysis=null; step.aiUpdatedAt=null;
+  save(); renderAiImageState();
+});
+
+/* ============================================================
+   GERAÇÃO DAS INSTRUÇÕES VIA OPENAI + VISÃO
+   ============================================================ */
+function selectedPartsPayload(step){
+  const ids = step.selectedPecaIds || [];
+  return ids.map(id=>state.pecas.find(p=>p.id===id)).filter(Boolean).map(p=>({
+    id:p.id,
+    nome:p.nome,
+    tipo:p.tipo,
+    quantidadeTotal:p.qtd,
+    quantidadeNestaVista: Math.max(1, Math.min(p.qtd, parseInt((step.partUsage||{})[p.id])||1)),
+    codigo:p.codigo||null,
+    torqueNm:p.torqueNm||null
+  }));
+}
+
+function calloutsPayload(step){
+  return (step.chamadas||[]).filter(c=>c.pecaId && c.x!=null && c.y!=null).map((c,idx)=>{
+    const p=state.pecas.find(x=>x.id===c.pecaId);
+    return {id:c.id, letra:calloutLetter(idx), pecaId:c.pecaId, pecaNome:p?p.nome:'', x:Number(c.x), y:Number(c.y), tipX:Number(c.tipX), tipY:Number(c.tipY)};
+  });
+}
+
+function applyAiAnalysis(step, analysis){
+  step.aiAnalysis = analysis;
+  step.aiUpdatedAt = new Date().toISOString();
+  const validIds = new Set(state.pecas.map(p=>p.id));
+  step.passos = (analysis.steps||[]).map((r, idx)=>({
+    id: uid('pa'),
+    source: 'ai',
+    pecaIds: (r.partIds||[]).filter(id=>validIds.has(id)),
+    chamadaIds: (r.calloutIds||[]).filter(id=>(step.chamadas||[]).some(c=>c.id===id)),
+    atividade: r.activity || 'outro',
+    itemId: (r.hardwareIds||[]).find(id=>validIds.has(id)) || '',
+    obs: r.notes || '',
+    descricaoIA: r.instruction || '',
+    confidence: r.confidence || 'media'
+  }));
+}
+
+async function analisarStepComIA(step, opts){
+  opts = opts || {};
+  const parts = selectedPartsPayload(step);
+  if(!step){ throw new Error('Nenhuma vista selecionada.'); }
+  if(!parts.length){ throw new Error('Selecione as peças que aparecem nesta vista.'); }
+  const missing=(step.selectedPecaIds||[]).filter(pid=>!(step.chamadas||[]).some(c=>c.pecaId===pid));
+  if(missing.length){ throw new Error('Posicione ao menos uma chamada para cada peça selecionada antes de analisar.'); }
+  const callouts=calloutsPayload(step);
+  const response = await fetch(getAiServer(), {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      manualTitle: state.titulo || 'Manual de montagem',
+      productDescription: state.produtoFinalDescricao || '',
+      pageName: step.nome,
+      imageDataUrl: step.imagemData,
+      parts,
+      callouts,
+      userInstructions: step.aiPromptNotes || ''
+    })
+  });
+  if(!response.ok){
+    const body = await response.text().catch(()=> '');
+    throw new Error(`Servidor IA: ${response.status} ${body.slice(0,240)}`);
+  }
+  const analysis = await response.json();
+  if(!analysis || !Array.isArray(analysis.steps)) throw new Error('Resposta da IA sem passos válidos.');
+  applyAiAnalysis(step, analysis);
+  save();
+  return analysis;
+}
+
+async function analisarImagemAtual(){
+  const step = currentStep();
+  const btn = document.getElementById('btnAnalisarImagem');
+  const status = document.getElementById('aiImageStatus');
+  if(!step){ showToast('Adicione uma vista explodida primeiro.', 'error'); return; }
+  if(!(step.selectedPecaIds||[]).length){ showToast('Selecione as peças que aparecem nesta vista.', 'error'); renderAiImageState(); return; }
+  if((step.selectedPecaIds||[]).some(pid=>!(step.chamadas||[]).some(c=>c.pecaId===pid))){ showToast('Posicione ao menos uma chamada para cada peça selecionada.', 'error'); renderAiImageState(); return; }
+  const old = btn.textContent;
+  btn.disabled=true; btn.textContent='Analisando imagem...';
+  status.className='ai-status-box'; status.textContent='O ChatGPT está examinando a vista explodida, relacionando os componentes e propondo a ordem de montagem...';
+  try{
+    await analisarStepComIA(step);
+    state.selectedPassoId = null;
+    renderSteps(); renderPassoList(); renderPassoEditor(); renderPreview(); renderAiImageState();
+    showToast('Instruções geradas a partir da vista explodida.', 'success');
+  }catch(err){
+    console.error(err);
+    status.className='ai-status-box warn'; status.textContent=err.message || 'Falha ao analisar a imagem.';
+    showToast('Não foi possível analisar a vista. Verifique se o servidor OpenAI está ligado.', 'error');
+  }finally{ btn.disabled=false; btn.textContent=old; }
+}
+
+document.getElementById('btnAnalisarImagem').addEventListener('click', analisarImagemAtual);
+
+let aiGenTimer = null;
+function scheduleAutoGenerate(){
+  clearTimeout(aiGenTimer);
+  const status = document.getElementById('previewStatus');
+  if(status) status.textContent = 'Há alterações no manual. Reanalise a vista quando quiser atualizar as instruções.';
+}
+
+async function gerarTextosIA(opts){
+  opts=opts||{};
+  const status = document.getElementById('previewStatus');
+  const btn = document.getElementById('btnGerarIA');
+  const candidates = state.passos.filter(s=>(s.selectedPecaIds||[]).length>0);
+  if(!candidates.length){ if(!opts.silent) showToast('Selecione peças em pelo menos uma vista explodida.', 'error'); return; }
+  const old=btn.textContent; btn.disabled=true; btn.textContent='Analisando...';
+  try{
+    let done=0;
+    for(const step of candidates){
+      if(status) status.textContent=`Analisando vista ${done+1} de ${candidates.length}...`;
+      await analisarStepComIA(step, {silent:true});
+      done++;
+    }
+    if(status) status.textContent=`${done} vista(s) analisada(s) pelo ChatGPT.`;
+    renderSteps(); renderPassoList(); renderPassoEditor(); renderPreview(); renderAiImageState();
+    if(!opts.silent) showToast('Todas as vistas selecionadas foram analisadas.', 'success');
+  }catch(err){
+    console.error(err);
+    if(status) status.textContent='Falha durante a análise das vistas.';
+    if(!opts.silent) showToast('Falha ao analisar uma das vistas. Verifique o servidor OpenAI.', 'error');
+  }finally{ btn.disabled=false; btn.textContent=old; }
+}
+document.getElementById('btnGerarIA').addEventListener('click', ()=>gerarTextosIA({silent:false}));
+
+/* ============================================================
+   EXPORTAÇÃO XML
+   ============================================================ */
+function buildXml(){
+  const esc = (s)=> String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  const titulo = state.titulo && state.titulo.trim() ? state.titulo : '';
+  let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+  xml += `<manual titulo="${esc(titulo)}">\n`;
+  if(state.produtoFinalDescricao && state.produtoFinalDescricao.trim()) xml += `  <produtoFinal>${esc(state.produtoFinalDescricao.trim())}</produtoFinal>\n`;
+
+  xml += '  <pecas>\n';
+  state.pecas.forEach(p=>{
+    xml += `    <peca id="${p.id}" tipo="${p.tipo}" nome="${esc(p.nome)}" quantidade="${p.qtd}"${p.codigo?` codigo="${esc(p.codigo)}"`:''}${p.torqueNm?` torqueNm="${p.torqueNm}"`:''}/>\n`;
+  });
+  xml += '  </pecas>\n';
+
+  xml += '  <paginas>\n';
+  state.passos.forEach((s,idx)=>{
+    xml += `    <pagina numero="${idx+1}" nomeImagem="${esc(s.nome)}">\n`;
+    xml += '      <pecasVisiveis>\n';
+    (s.selectedPecaIds||[]).forEach(pid=>{ const p=state.pecas.find(x=>x.id===pid); if(p) xml += `        <pecaRef id="${p.id}" nome="${esc(p.nome)}" quantidadeNestaVista="${Math.max(1,Math.min(p.qtd,parseInt((s.partUsage||{})[p.id])||1))}"/>\n`; });
+    xml += '      </pecasVisiveis>\n';
+    xml += '      <chamadas>\n';
+    s.chamadas.forEach((c,cidx)=>{
+      const peca = state.pecas.find(p=>p.id===c.pecaId);
+      const posAttrs = (c.x!=null) ? ` x="${c.x}" y="${c.y}"` : '';
+      xml += `        <chamada letra="${calloutLetter(cidx)}" id="${c.id}" pecaId="${c.pecaId||''}" pecaNome="${esc(peca?peca.nome:'')}"${posAttrs}/>\n`;
+    });
+    xml += '      </chamadas>\n';
+    xml += '      <legendas>\n';
+    s.chamadas.forEach((c,cidx)=>{ const peca=state.pecas.find(p=>p.id===c.pecaId); xml += `        <legenda letra="${calloutLetter(cidx)}" texto="${esc(legendTextForCallout(s,c,cidx))}"${peca?` pecaId="${peca.id}"`:''}/>\n`; });
+    xml += '      </legendas>\n';
+    xml += '      <passos>\n';
+    s.passos.forEach((pa,pidx)=>{
+      const item = state.pecas.find(p=>p.id===pa.itemId);
+      xml += `        <passo numero="${pidx+1}">\n`;
+      xml += `          <descricao>${esc(instrucaoTexto(pa, s))}</descricao>\n`;
+      xml += '          <chamadaRefs>\n';
+      (pa.chamadaIds||[]).forEach(cid=>{
+        const cidx = s.chamadas.findIndex(c=>c.id===cid);
+        if(cidx > -1) xml += `            <chamadaRef letra="${calloutLetter(cidx)}" id="${cid}"/>\n`;
+      });
+      xml += '          </chamadaRefs>\n';
+      xml += '          <pecaRefs>\n';
+      (pa.pecaIds||[]).forEach(pid=>{ const p=state.pecas.find(x=>x.id===pid); if(p) xml += `            <pecaRef id="${p.id}" nome="${esc(p.nome)}"/>\n`; });
+      xml += '          </pecaRefs>\n';
+      xml += `          <atividade tipo="${pa.atividade}">\n`;
+      if(item){
+        const tagName = item.tipo==='parafuso' ? 'parafusoRef' : item.tipo==='porca' ? 'porcaRef' : item.tipo==='tarugo' ? 'tarugoRef' : 'itemRef';
+        xml += `            <${tagName} id="${item.id}" nome="${esc(item.nome)}"/>\n`;
+      }
+      xml += '          </atividade>\n';
+      if(pa.obs) xml += `          <observacao>${esc(pa.obs)}</observacao>\n`;
+      xml += '        </passo>\n';
+    });
+    xml += '      </passos>\n';
+    xml += '    </pagina>\n';
+  });
+  xml += '  </paginas>\n</manual>';
+  return xml;
+}
+
+function highlightXml(xml){
+  return xml
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/&lt;(\/?[a-zA-Z0-9]+)/g, '&lt;<span class="tag-name">$1</span>')
+    .replace(/([a-zA-Z]+)=(&quot;.*?&quot;|"[^"]*")/g, '<span class="attr">$1</span>=<span class="val">$2</span>');
+}
+
+function renderExport(){
+  const totalChamadas = state.passos.reduce((sum,p)=>sum+p.chamadas.length,0);
+  const totalPassosCount = state.passos.reduce((sum,p)=>sum+p.passos.length,0);
+  const incompletos = state.passos.reduce((sum,p)=> sum + p.passos.filter(pa=>!String(pa.descricaoIA||'').trim()).length, 0);
+  const validationIssues=validateManual();
+  const vCounts=validationCounts(validationIssues);
+  const validationHtml=validationIssues.slice(0,12).map(i=>`<li><strong>${escapeHtml(i.rule)}</strong> ${escapeHtml((Number.isInteger(i.pageIndex)?'Imagem '+(i.pageIndex+1)+(Number.isInteger(i.stepIndex)?', step '+(i.stepIndex+1):'')+': ':'')+i.message)}</li>`).join('');
+  document.getElementById('exportSummary').innerHTML = `
+    <div class="stat"><span>Peças cadastradas</span><strong>${state.pecas.length}</strong></div>
+    <div class="stat"><span>Páginas (imagens)</span><strong>${state.passos.length}</strong></div>
+    <div class="stat"><span>Chamadas marcadas</span><strong>${totalChamadas}</strong></div>
+    <div class="stat"><span>Passos definidos</span><strong>${totalPassosCount}</strong></div>
+    <div class="stat"><span>Erros da skill</span><strong style="color:${vCounts.errors>0?'var(--safety)':'var(--success)'}">${vCounts.errors}</strong></div>
+    <div class="stat"><span>Avisos da skill</span><strong>${vCounts.warnings}</strong></div>
+    ${incompletos>0 ? '<div class="warn-banner" style="margin-top:12px;">Há instruções sem texto. Revise-as na aba Montagem antes de finalizar.</div>' : ''}
+    ${validationIssues.length?`<div class="warn-banner" style="margin-top:12px;"><strong>Validação automática:</strong><ul style="margin:6px 0 0 18px;padding:0;">${validationHtml}</ul>${validationIssues.length>12?`<div class="hint">+ ${validationIssues.length-12} pendência(s).</div>`:''}</div>`:'<div style="margin-top:12px;padding:10px;background:var(--success-dim);color:var(--success);border:1px solid #B8D2BC;">R1–R5 sem pendências determinísticas. R6 ainda exige revisão técnica.</div>'}
+  `;
+  const xml = buildXml();
+  document.getElementById('xmlPreview').innerHTML = highlightXml(xml);
+  document.getElementById('btnDownloadXml').onclick = ()=>{
+    const blob = new Blob([xml], {type:'application/xml'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'manual-montagem.xml';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+}
+
+/* ============================================================
+   EXPORTAÇÃO WORD / PDF
+   ============================================================ */
+function nomeArquivoBase(){
+  const t = state.titulo && state.titulo.trim() ? state.titulo.trim() : 'manual-montagem';
+  return t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'') || 'manual-montagem';
+}
+
+function buildWordHtml(){
+  const titulo = state.titulo && state.titulo.trim() ? state.titulo : 'Manual de Montagem';
+  let body = `<h1 style="text-align:center;font-family:Arial,sans-serif;color:#1B2740;border-bottom:3px solid #2A5FCB;padding-bottom:10px;">${escapeHtml(titulo)}</h1>`;
+  if(state.produtoFinalDescricao && state.produtoFinalDescricao.trim()) body += `<p style="font-family:Arial,sans-serif;font-size:12px;color:#4A5670;margin:0 0 18px;"><strong>Produto final:</strong> ${escapeHtml(state.produtoFinalDescricao.trim())}</p>`;
+  if(state.passos.length === 0){
+    body += '<p style="font-family:Arial,sans-serif;">Nenhuma imagem adicionada ainda.</p>';
+  }
+  state.passos.forEach(s=>{
+    const wordMarkers = buildCalloutOverlaySvg(s, 1000, 1000, {interactive:false, selectedCalloutId:null}).replace('<svg class="callout-overlay"', '<svg class="callout-overlay" style="position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;"');
+    const itemsHtml = s.passos.length
+      ? s.passos.map((pa,pidx)=>`<li style="margin-bottom:8px;"><strong>${pidx+1}.</strong> ${escapeHtml(instrucaoTexto(pa, s))}</li>`).join('')
+      : '<li>Nenhum passo definido nesta imagem.</li>';
+    body += `
+      <table style="width:100%;border-collapse:collapse;margin-bottom:26px;" cellpadding="12">
+        <tr>
+          <td style="width:38%;vertical-align:top;border:1px solid #ccc;"><div style="position:relative;width:100%;"><img src="${s.imagemData}" style="width:100%;display:block;">${wordMarkers}</div><div style="font:11px Arial,sans-serif;line-height:1.45;margin-top:6px;">${(s.chamadas||[]).map((c,idx)=>`<div><strong>${calloutLetter(idx)}</strong>—${escapeHtml(legendTextForCallout(s,c,idx).replace(/^.*?—/,''))}</div>`).join('')}</div></td>
+          <td style="width:62%;vertical-align:top;border:1px solid #ccc;">
+            <ul style="list-style:none;margin:0;padding:0;font-family:Arial,sans-serif;font-size:13px;line-height:1.7;">${itemsHtml}</ul>
+          </td>
+        </tr>
+      </table>`;
+  });
+  return `<!DOCTYPE html>
+<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+<head><meta charset="utf-8"><title>${escapeHtml(titulo)}</title><style>.callout-line{stroke:#1B2740;stroke-width:2;stroke-linecap:round;}.callout-arrowhead{fill:#1B2740;}.callout-circle-shape{fill:#FFFFFF;stroke:#1B2740;stroke-width:2;}.callout-label{font-family:Arial,sans-serif;font-size:14px;font-weight:700;fill:#1B2740;text-anchor:middle;dominant-baseline:middle;}</style></head>
+<body>${body}</body>
+</html>`;
+}
+
+document.getElementById('btnBaixarWord').addEventListener('click', ()=>{
+  if(state.passos.length === 0){ showToast('Adicione imagens e passos antes de exportar o manual.', 'error'); return; }
+  const html = buildWordHtml();
+  const blob = new Blob(['\ufeff', html], {type:'application/msword'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = nomeArquivoBase() + '.doc';
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+document.getElementById('btnBaixarPdf').addEventListener('click', ()=>{
+  if(state.passos.length === 0){ showToast('Adicione imagens e passos antes de exportar o manual.', 'error'); return; }
+  if(isInsideChatGPTViewer()){
+    showToast('A exportação em PDF usa a função de impressão do navegador, que fica bloqueada dentro de um visualizador incorporado por segurança. Baixe este arquivo e abra-o direto no navegador para gerar o PDF — funciona normalmente fora daqui.', 'error');
+    return;
+  }
+  const previewTab = document.querySelector('nav.tabs button[data-tab="preview"]');
+  if(previewTab) previewTab.click();
+  setTimeout(()=> window.print(), 350);
+});
+
+/* ============================================================
+   BACKUP JSON
+   ============================================================ */
+document.getElementById('btnExportJson').addEventListener('click', ()=>{
+  const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'backup-montagem.json';
+  a.click();
+  URL.revokeObjectURL(url);
+});
+document.getElementById('btnImport').addEventListener('click', ()=> document.getElementById('importInput').click());
+document.getElementById('importInput').addEventListener('change', (e)=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev)=>{
+    let parsed;
+    try{
+      parsed = JSON.parse(ev.target.result);
+    }catch(err){
+      showToast('Arquivo inválido.', 'error');
+      return;
+    }
+    showConfirm('Importar este backup vai substituir os dados atuais. Continuar?', ()=>{
+      state = Object.assign(defaultState(), parsed);
+      migrarParaNovoModelo();
+      save(); renderAll(); scheduleAutoGenerate(1000);
+      showToast('Backup importado.', 'success');
+    });
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+});
+
+/* ============================================================
+   INIT
+   ============================================================ */
+function renderAll(){
+  document.getElementById('manualTitulo').value = state.titulo || '';
+  document.getElementById('produtoFinalDescricao').value = state.produtoFinalDescricao || '';
+  renderPecas(); renderSteps(); renderStage(); renderPecasDaImagem(); renderAiImageState();
+  renderChamadasList(); renderPassoEditor(); renderPassoList();
+  renderCounts(); renderPreview();
+  const markerBtn=document.getElementById('btnToggleMarkerMode'); if(markerBtn) markerBtn.textContent=state.markerMode?'Posicionar chamadas: ligado':'Posicionar chamadas: desligado';
+}
+load();
+renderAll();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+{
+  "name": "manual-montagem-openai-v4-4",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server-openai.mjs"
+  },
+  "dependencies": {
+    "openai": "^5.0.0"
+  }
+}
