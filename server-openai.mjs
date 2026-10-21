@@ -1,9 +1,10 @@
 import http from 'node:http';
 import { readFileSync } from 'node:fs';
 import OpenAI from 'openai';
+import {ManualInputError,buildManualContent,manualSchema,validateManualResult} from './manual-analysis.mjs';
 
 const PORT = Number(process.env.PORT || 3000);
-const MODEL = process.env.OPENAI_MODEL || 'gpt-5.6';
+const MODEL = process.env.OPENAI_MODEL || 'gpt-5.4';
 
 // A skill de redação técnica é um artefato externo e versionável.
 // Ela é carregada no início do servidor e enviada como instrução permanente
@@ -38,12 +39,13 @@ REGRAS DE INTEGRAÇÃO COM ESTE APLICATIVO
 - Não confunda quantidade total do produto com quantidade usada na vista atual.
 `;
 
-if (!process.env.OPENAI_API_KEY) {
+const apiKey=process.env.OPENAI_API_KEY||process.env.MONTAGEM_API_KEY;
+if (!apiKey) {
   console.error('Defina OPENAI_API_KEY antes de iniciar o servidor.');
   process.exit(1);
 }
 
-const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const client = new OpenAI({ apiKey, timeout:240000, maxRetries:0 });
 
 const schema = {
   type: 'object',
@@ -107,7 +109,7 @@ async function readJson(req) {
   let size = 0;
   for await (const chunk of req) {
     size += chunk.length;
-    if (size > 30 * 1024 * 1024) throw new Error('Payload muito grande.');
+    if (size > 30 * 1024 * 1024) throw new ManualInputError('O manual excede 30 MB. Reduza as imagens.');
     chunks.push(chunk);
   }
   return JSON.parse(Buffer.concat(chunks).toString('utf8'));
@@ -123,11 +125,17 @@ const server = http.createServer(async (req, res) => {
     return res.end();
   }
 
-  if (req.method !== 'POST' || req.url !== '/api/analyze') {
+  if (req.method !== 'POST' || !['/api/analyze','/api/analyze-manual'].includes(req.url)) {
     return send(res, 404, { error: 'Use POST /api/analyze' });
   }
 
   try {
+    if(req.url==='/api/analyze-manual'){
+      const input=await readJson(req),content=buildManualContent(input);
+      const response=await client.responses.create({model:MODEL,instructions:SKILL_INSTRUCTIONS,reasoning:{effort:'high'},input:[{role:'user',content}],text:{format:{type:'json_schema',name:'complete_assembly_manual',strict:true,schema:manualSchema}}});
+      if(!response.output_text||response.status==='incomplete')throw Error('Análise incompleta. Os textos anteriores foram preservados.');
+      return send(res,200,validateManualResult(input,JSON.parse(response.output_text)));
+    }
     const { manualTitle, productDescription = '', pageName, imageDataUrl, parts, callouts = [], userInstructions = '' } = await readJson(req);
     if (!imageDataUrl || !String(imageDataUrl).startsWith('data:image/')) {
       return send(res, 400, { error: 'imageDataUrl ausente ou inválido.' });
@@ -207,13 +215,15 @@ Retorne a melhor sequência fisicamente executável que os dados sustentarem, co
 
     return send(res, 200, analysis);
   } catch (err) {
-    console.error(err);
-    return send(res, 500, { error: err?.message || 'Falha ao analisar a vista.' });
+    const status=err instanceof ManualInputError||err instanceof SyntaxError?400:502;
+    const message=err?.status===401?'A credencial da OpenAI foi rejeitada. Revise a chave no servidor.':err?.status===429?'Limite ou saldo da API atingido. Verifique o faturamento.':err?.status?`A OpenAI recusou a análise (HTTP ${err.status}). Verifique o modelo e o acesso.`:err?.name==='APIConnectionError'?'Não foi possível conectar à OpenAI. Verifique a rede e o proxy.':err?.message||'Falha na análise.';
+    console.error('Falha na análise:',err?.name,err?.status||status);
+    return send(res,status,{error:message});
   }
 });
 
 server.listen(PORT, () => {
-  console.log(`Servidor OpenAI pronto em http://localhost:${PORT}/api/analyze`);
+  console.log(`Servidor OpenAI pronto em http://localhost:${server.address().port}/api/analyze`);
   console.log(`Modelo: ${MODEL}`);
   console.log('Skill obrigatória carregada: redacao-tecnica-montagem v1.0.0');
   console.log('Arquivo da skill: SKILL.md');

@@ -3,9 +3,14 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "node server-openai.mjs"
+    "start": "node server-openai.mjs",
+    "test": "node --test tests/manual-analysis.test.mjs",
+    "test:browser": "node tests/browser-flow.mjs"
   },
   "dependencies": {
     "openai": "^5.0.0"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.58.2"
   }
 }
