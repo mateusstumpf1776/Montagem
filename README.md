@@ -31,6 +31,7 @@ Variáveis opcionais:
 | --- | --- |
 | `OPENAI_MODEL` | `gpt-5.4` por padrão; precisa aceitar visão, Responses API, JSON Schema e raciocínio alto |
 | `PORT` | `3000` por padrão |
+| `ANALYSIS_TIMEOUT_MS` | Prazo do servidor: `600000` (10 minutos) por padrão; aceita de 1000 a 600000 ms |
 | `NODE_USE_ENV_PROXY` | `1` em ambientes Node 24 que precisam do proxy de rede |
 
 Abra `montagem-xml-openai-v4.6.html` no navegador. O nome do arquivo foi mantido para compatibilidade; o cabeçalho identifica a versão v5. Também é possível servi-lo com `python3 -m http.server 8080` na pasta. No aplicativo, configure o endereço do backend terminando em `/api/analyze`. O cliente usa `/api/analyze-manual` para gerar o conjunto. O backend não serve o HTML.
@@ -39,6 +40,7 @@ Abra `montagem-xml-openai-v4.6.html` no navegador. O nome do arquivo foi mantido
 
 - Geração conjunta com raciocínio **alto** e imagens em detalhe **alto**, sem troca automática para modelo inferior.
 - `SKILL.md` continua obrigatório, com regras R1–R6. A IA deve declarar informações insuficientes e pendências de sequência física, sem inventar operações ou componentes.
+- O servidor aguarda até 10 minutos; o navegador aguarda 11 minutos para receber a resposta. O tempo decorrido aparece durante a análise. A rede ou o provedor ainda pode impor um prazo menor. Não há nova chamada automática após timeout.
 - Não há geração automática ao editar ou trocar de aba.
 - Respostas incompletas ou inválidas e falhas da API preservam os textos anteriores. Uma resposta atrasada não substitui um manual alterado durante a geração.
 - Uma nova geração pede confirmação antes de substituir instruções existentes.

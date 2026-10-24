@@ -1898,7 +1898,9 @@ async function gerarTextosIA(opts={}){
   if(analysisRunning)return;const issues=manualProblems();if(issues.length){showToast(issues[0],'error');renderReadiness();return;}
   if(!opts.confirmed&&state.passos.some(p=>p.passos.length)){showConfirm('Uma nova análise substituirá todas as instruções e notas, incluindo suas edições. Salve um backup para manter esta versão. Continuar?',()=>gerarTextosIA({confirmed:true}));return;}
   const payload=manualPayload(),signature=JSON.stringify(payload),target=state,button=document.getElementById('btnGerarIA'),status=document.getElementById('previewStatus'),controller=new AbortController();
-  analysisRunning=true;button.disabled=true;button.textContent='Analisando o conjunto…';status.textContent='A IA está examinando todas as imagens e dependências. Isso pode levar alguns minutos.';const timer=setTimeout(()=>controller.abort(),270000);
+  analysisRunning=true;button.disabled=true;button.textContent='Analisando o conjunto…';const startedAt=Date.now();
+  const updateWaiting=()=>{const seconds=Math.floor((Date.now()-startedAt)/1000),elapsed=Math.floor(seconds/60)+':'+String(seconds%60).padStart(2,'0');status.textContent='A IA está examinando o conjunto com raciocínio alto. Tempo decorrido: '+elapsed+'. A análise pode levar até 10 minutos.';};
+  updateWaiting();const waitingTimer=setInterval(updateWaiting,1000),timer=setTimeout(()=>controller.abort(),660000);
   try{
     const url=new URL(getAiServer());url.pathname=url.pathname.replace(/\/api\/analyze(?:-manual)?\/?$/,'/api/analyze-manual');if(!url.pathname.endsWith('/api/analyze-manual'))throw Error('Configure o servidor com endereço terminando em /api/analyze.');
     if(new Blob([signature]).size>30*1024*1024)throw Error('O manual excede 30 MB. Reduza as imagens.');
@@ -1907,7 +1909,7 @@ async function gerarTextosIA(opts={}){
     validateGlobalResponse(payload,result);
     for(const b of result.blocks){state.blocos.find(x=>x.id===b.blockId).aiAnalysis={summary:b.summary,dependencies:b.dependencies,uncertainties:b.uncertainties};for(const p of b.pages)applyAiAnalysis(state.passos.find(x=>x.id===p.pageId),p);}
     state.manualAnalysis={summary:result.summary,uncertainties:result.uncertainties,signature,updatedAt:new Date().toISOString()};state.selectedPassoId=null;save();renderAll();status.textContent='Análise conjunta concluída. Revise as pendências e edite o manual abaixo.';showToast('Manual gerado com o contexto completo.','success');
-  }catch(err){const message=err.name==='AbortError'?'A análise excedeu o tempo de espera. Seus textos foram preservados.':err.message;status.textContent=message;showToast(message,'error');}finally{clearTimeout(timer);analysisRunning=false;button.disabled=false;button.textContent='Analisar manual completo';}
+  }catch(err){const message=err.name==='AbortError'?'A análise excedeu o tempo de espera. Seus textos foram preservados.':err.message;status.textContent=message;showToast(message,'error');}finally{clearTimeout(timer);clearInterval(waitingTimer);analysisRunning=false;button.disabled=false;button.textContent='Analisar manual completo';}
 }
 function catalogHtml(){return `<table class="catalog-output"><thead><tr><th>Chamada</th><th>Componente</th><th>Quantidade total</th><th>Especificações</th></tr></thead><tbody>${state.pecas.map(p=>`<tr><td>${escapeHtml(p.chamada)}</td><td>${escapeHtml(p.nome)}</td><td>${p.qtd}</td><td>${escapeHtml([p.codigo,p.torqueNm?'Torque: '+p.torqueNm+' N·m':''].filter(Boolean).join(' · '))}</td></tr>`).join('')}</tbody></table>`;}
 function outputImage(p){return `<div class="preview-image-inner"><img src="${p.imagemData}" alt="${escapeHtml(p.nome)}"><div class="callout-layer preview-callout-layer" data-preview-step-id="${p.id}"></div></div>${renderLegendHtml(p)}`;}

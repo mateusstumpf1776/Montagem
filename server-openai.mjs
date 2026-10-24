@@ -1,6 +1,6 @@
 import http from 'node:http';
 import { readFileSync } from 'node:fs';
-import OpenAI from 'openai';
+import OpenAI, { APIConnectionError, APIConnectionTimeoutError } from 'openai';
 import {ManualInputError,buildManualContent,manualSchema,validateManualResult} from './manual-analysis.mjs';
 
 const PORT = Number(process.env.PORT || 3000);
@@ -45,7 +45,14 @@ if (!apiKey) {
   process.exit(1);
 }
 
-const client = new OpenAI({ apiKey, timeout:240000, maxRetries:0 });
+// Keep the browser deadline longer than this limit, so it receives a useful
+// response instead of aborting before the server can explain the timeout.
+const analysisTimeoutMs = Number(process.env.ANALYSIS_TIMEOUT_MS || 600000);
+if (!Number.isInteger(analysisTimeoutMs) || analysisTimeoutMs < 1000 || analysisTimeoutMs > 600000) {
+  console.error('ANALYSIS_TIMEOUT_MS deve ser um inteiro entre 1000 e 600000 (até 10 minutos).');
+  process.exit(1);
+}
+const client = new OpenAI({ apiKey, timeout:analysisTimeoutMs, maxRetries:0 });
 
 const schema = {
   type: 'object',
@@ -215,8 +222,9 @@ Retorne a melhor sequência fisicamente executável que os dados sustentarem, co
 
     return send(res, 200, analysis);
   } catch (err) {
-    const status=err instanceof ManualInputError||err instanceof SyntaxError?400:502;
-    const message=err?.status===401?'A credencial da OpenAI foi rejeitada. Revise a chave no servidor.':err?.status===429?'Limite ou saldo da API atingido. Verifique o faturamento.':err?.status?`A OpenAI recusou a análise (HTTP ${err.status}). Verifique o modelo e o acesso.`:err?.name==='APIConnectionError'?'Não foi possível conectar à OpenAI. Verifique a rede e o proxy.':err?.message||'Falha na análise.';
+    const timedOut=err instanceof APIConnectionTimeoutError||[408,504].includes(err?.status);
+    const status=timedOut?504:err instanceof ManualInputError||err instanceof SyntaxError?400:502;
+    const message=timedOut?'A análise excedeu o tempo de espera. Seus textos anteriores foram preservados. O servidor aguarda até 10 minutos; a rede ou a OpenAI pode encerrar antes. Tente novamente ou reduza a quantidade de imagens, mantendo o contexto geral.':err?.status===401?'A credencial da OpenAI foi rejeitada. Revise a chave no servidor.':err?.status===429?'Limite ou saldo da API atingido. Verifique o faturamento.':err?.status?`A OpenAI recusou a análise (HTTP ${err.status}). Verifique o modelo e o acesso.`:err instanceof APIConnectionError?'Não foi possível conectar à OpenAI. Verifique a rede e o proxy.':err?.message||'Falha na análise.';
     // Log the same sanitized explanation sent to the browser. SDK messages
     // can contain credentials, so never print the original error object.
     console.error('Falha na análise:',message,`(${err?.name||'Error'}; HTTP ${err?.status||status})`);
