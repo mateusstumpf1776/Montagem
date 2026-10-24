@@ -217,7 +217,9 @@ Retorne a melhor sequência fisicamente executável que os dados sustentarem, co
   } catch (err) {
     const status=err instanceof ManualInputError||err instanceof SyntaxError?400:502;
     const message=err?.status===401?'A credencial da OpenAI foi rejeitada. Revise a chave no servidor.':err?.status===429?'Limite ou saldo da API atingido. Verifique o faturamento.':err?.status?`A OpenAI recusou a análise (HTTP ${err.status}). Verifique o modelo e o acesso.`:err?.name==='APIConnectionError'?'Não foi possível conectar à OpenAI. Verifique a rede e o proxy.':err?.message||'Falha na análise.';
-    console.error('Falha na análise:',err?.name,err?.status||status);
+    // Log the same sanitized explanation sent to the browser. SDK messages
+    // can contain credentials, so never print the original error object.
+    console.error('Falha na análise:',message,`(${err?.name||'Error'}; HTTP ${err?.status||status})`);
     return send(res,status,{error:message});
   }
 });
