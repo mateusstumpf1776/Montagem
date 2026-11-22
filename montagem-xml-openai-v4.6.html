@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Instruções de Montagem — Gerador XML</title>
+<title>Montagem · Editor de manuais</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -400,16 +400,51 @@
   .block-create{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.block-create input{flex:1;min-width:220px}
   .block-row{display:flex;gap:6px;align-items:center;border:1px solid var(--line);padding:7px;margin:7px 0;background:var(--paper)}.block-row.active{border-color:var(--blueprint);background:var(--blueprint-dim)}
   .block-select{display:flex;align-items:center;gap:10px;flex:1;text-align:left;background:none;border:0;cursor:pointer;color:var(--ink);font:inherit;min-width:0}.block-select span:nth-child(2){flex:1;overflow-wrap:anywhere}.block-select small{color:var(--ink-soft)}
-  .block-details{display:grid;grid-template-columns:1fr 2fr;gap:18px;margin-top:18px}.general-editor{grid-template-columns:minmax(0,1fr) 340px}.general-editor>div:first-child,.general-editor .page-output,.general-editor #btnAnalisarImagem{display:none}
+  .block-details{display:grid;grid-template-columns:1fr 2fr;gap:18px;margin-top:18px}.general-editor{grid-template-columns:minmax(0,1fr) 340px}.general-editor>div:first-child,.general-editor .page-output,.general-editor .ai-workflow-card,.general-editor #btnAnalisarImagem{display:none}
   .workflow-notice{max-width:920px;margin:0 auto 14px;padding:14px 18px;background:var(--white);border:1px solid var(--line-strong);font-size:13px;line-height:1.5}.workflow-notice:empty{display:none}.workflow-notice.ready{border-color:var(--success)}
   .output-edit-hint{max-width:920px;margin:0 auto 14px;font-size:12px;color:var(--ink-soft)}.manual-block-heading{font-size:19px;border-bottom:2px solid var(--blueprint);padding-bottom:8px;margin-top:30px;break-after:avoid}
   .output-step-text{display:block;white-space:pre-wrap;min-height:1.5em;outline:0}.output-step-text:hover,.output-step-text:focus,.output-note:focus{background:#F1F5FF;box-shadow:0 0 0 2px var(--blueprint-dim)}
-  .output-note{display:block;white-space:pre-wrap;margin-top:6px;font-size:12px;color:var(--ink-soft)}.output-note:empty:before{content:'Adicionar nota';color:#8B8F98}
+  .output-note{display:block;white-space:pre-wrap;margin-top:6px;font-size:12px;color:var(--ink-soft)}.output-note:before{content:'NOTA · ';font-weight:600}.output-note:empty:before{content:'Adicionar nota';font-weight:400;color:#8B8F98}
   .review-notes{color:#8A3E17;font-size:12px}.overview-output{max-width:520px;margin:0 auto 22px}.catalog-output{width:100%;font-size:12px;margin:14px 0 24px}.preview-steps li{display:flex;gap:8px;margin-bottom:14px}
   @media(max-width:1000px){.montagem-layout{grid-template-columns:160px minmax(0,1fr)}.montagem-layout>div:last-child{grid-column:1/-1}.general-editor{grid-template-columns:1fr}}
   @media(max-width:800px){.montagem-layout,.block-details,.pecas-layout,.preview-block{grid-template-columns:1fr}.block-row,.preview-toolbar{flex-wrap:wrap}.block-select{min-width:60%}}
   @media print{.output-edit-hint,.workflow-notice,.server-config{display:none!important}.output-step-text{background:none!important;box-shadow:none!important}.output-note:empty{display:none}}
 
+  body{--paper:#F5F7FC;--paper-dim:#EEF2FA;--line:#D9E0EE;--line-strong:#C4CEE0;background-image:radial-gradient(#D2DCEE 1px,transparent 1px);background-size:24px 24px}
+  header h1{font:700 24px 'IBM Plex Sans',sans-serif;letter-spacing:-.02em;text-transform:none}
+  header h1 span{display:block;color:#ACBDE3;font-size:13px;font-weight:500;letter-spacing:0}
+  header .btn-primary{background:var(--blueprint);color:white;border-color:var(--blueprint)}
+  .panel{border-radius:8px;box-shadow:0 3px 14px #1B274008;min-width:0}
+  .panel-header h2{font:650 17px 'IBM Plex Sans',sans-serif;color:var(--ink);letter-spacing:0;text-transform:none}
+  .hint,.field label,.context-example,.produto-context-panel .context-example{font-size:14px}
+  .btn,.btn-sm{font-family:'IBM Plex Sans',sans-serif;text-transform:none;letter-spacing:0;font-size:14px;border-radius:5px}
+  .btn-sm{padding:5px 9px}
+  nav.tabs{overflow-x:auto;white-space:nowrap}
+  nav.tabs button{font:600 15px 'IBM Plex Sans',sans-serif;text-transform:none;letter-spacing:0}
+  main{max-width:1280px}
+  .workflow-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .workflow-actions .hint{margin:0}
+  .next-actions{justify-content:flex-end;margin-top:16px}
+  .import-panel{margin-bottom:16px}
+  #pecasTableWrap,#excelReview{overflow-x:auto}
+  .import-preview{max-height:260px;overflow:auto;margin:12px 0;border:1px solid var(--line)}
+  .import-preview th{position:sticky;top:0;background:var(--paper)}
+  .catalog-edit td:last-child{min-width:116px}
+  .catalog-edit input[type=text],.catalog-edit input[type=number]{min-width:5rem}
+  .catalog-edit .catalog-label{display:inline-block;color:var(--blueprint);font-weight:700}
+  .reference-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:10px;margin-top:10px}
+  .reference-group{grid-column:1/-1;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .reference-card{cursor:pointer;background:white;color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:6px;text-align:left;min-width:0}
+  .reference-card img{display:block;width:100%;height:100px;object-fit:contain}
+  .reference-card span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;padding:4px}
+  .input-dialog{width:min(520px,94vw);max-height:90vh;border:1px solid var(--line-strong);border-radius:10px;padding:24px;color:var(--ink)}
+  .input-dialog::backdrop{background:#17223F9D}
+  .input-dialog h2{margin:0 0 16px;font-size:19px}
+  .input-dialog .workflow-actions{justify-content:flex-end;margin-top:20px}
+  .input-dialog img{max-width:100%;max-height:62vh;display:block;margin:auto}
+  .block-row{border-radius:6px}
+  .review-notes{line-height:1.45}
+  @media(max-width:600px){header{align-items:flex-start;gap:10px;flex-direction:column;padding:12px 16px}nav.tabs{padding:0 8px}nav.tabs button{padding:12px 10px}main{padding:16px 12px 40px}.panel-body,.panel-header{padding:12px}}
 </style>
 </head>
 <body>
@@ -418,11 +453,11 @@
 <div id="modalRoot"></div>
 
 <header>
-  <h1>Instruções de Montagem <span>/ Blocos · v5</span></h1>
+  <h1>Montagem <span>Editor de manuais</span></h1>
   <div class="header-actions">
     <button class="btn" id="btnNovoManual">Novo manual</button>
     <button class="btn" id="btnBaixarWord">Baixar Word</button>
-    <button class="btn" id="btnBaixarPdf">Baixar PDF</button>
+    <button class="btn btn-primary" id="btnBaixarPdf">Baixar PDF</button>
     <button class="btn" id="btnImport">Importar backup</button>
     <button class="btn" id="btnExportJson">Salvar backup</button>
     <input type="file" id="importInput" accept="application/json" style="display:none;">
@@ -430,9 +465,10 @@
 </header>
 
 <nav class="tabs">
-  <button data-tab="pecas" class="active">1. Peças e visão geral <span class="count" id="countPecas">0</span></button>
-  <button data-tab="montagem">2. Blocos e imagens <span class="count" id="countPassos">0</span></button>
-  <button data-tab="preview">3. Análise e manual editável</button>
+  <button data-tab="pecas" class="active">1. Lista de peças <span class="count" id="countPecas">0</span></button>
+  <button data-tab="visao">2. Vista explodida</button>
+  <button data-tab="montagem">3. Procedimento <span class="count" id="countPassos">0</span></button>
+  <button data-tab="preview">4. Revisar manual</button>
   <button data-tab="exportar">Exportar XML</button>
 </nav>
 
@@ -450,9 +486,21 @@
       <div class="panel-body">
         <div class="field" style="margin-bottom:0;">
           <label for="produtoFinalDescricao">Descreva o produto que será montado</label>
-          <textarea id="produtoFinalDescricao" rows="3" placeholder="Ex: Armário de duas portas com três prateleiras internas; Colheitadeira com conjunto do rotor e carenagens laterais."></textarea>
-          <p class="context-example">Use este campo para dar contexto à IA sobre o conjunto completo. A descrição é salva no manual e considerada durante a análise das vistas explodidas.</p>
+          <textarea id="produtoFinalDescricao" rows="3" placeholder="Ex.: Armário de duas portas e três prateleiras internas."></textarea>
+          <p class="context-example">Informe o modelo, a configuração e qualquer detalhe de montagem que apareça nas vistas.</p>
         </div>
+      </div>
+    </div>
+    <div class="panel import-panel">
+      <div class="panel-header"><h2>Importar lista do Excel</h2></div>
+      <div class="panel-body">
+        <div class="workflow-actions">
+          <button class="btn btn-primary" id="btnExcel">Selecionar planilha</button>
+          <span class="hint">Excel .xlsx ou .xls</span>
+          <input id="excelInput" type="file" accept=".xlsx,.xls" hidden>
+        </div>
+        <p id="excelStatus" class="hint" role="status">A IA organiza as peças, separa as medidas e soma as quantidades repetidas.</p>
+        <div id="excelReview"></div>
       </div>
     </div>
     <div class="pecas-layout">
@@ -495,21 +543,57 @@
       </div>
 
       <div class="panel">
-        <div class="panel-header"><h2>Lista de peças separadas</h2></div>
+        <div class="panel-header"><h2>Catálogo do móvel</h2></div>
         <div class="panel-body" id="pecasTableWrap">
           <div class="empty-state">Nenhuma peça cadastrada ainda.</div>
         </div>
       </div>
     </div>
-    <div class="panel" style="margin-top:18px"><div class="panel-header"><h2>Imagem geral do kit / vista explodida</h2><button class="btn btn-sm" id="btnGeneralImage">Inserir / substituir imagem geral</button></div><div class="panel-body"><p class="hint">Posicione as chamadas de todas as peças. As mesmas letras serão usadas nos procedimentos.</p><input id="generalImageInput" type="file" accept="image/png,image/jpeg,image/webp" hidden></div></div>
+    <div class="workflow-actions next-actions"><button class="btn btn-primary" data-go="visao">Ir para vista explodida</button></div>
+  </section>
+
+  <section id="tab-visao" style="display:none;">
+    <div class="panel import-panel">
+      <div class="panel-header"><h2>Vista explodida do móvel</h2></div>
+      <div class="panel-body">
+        <div class="workflow-actions"><button class="btn btn-primary" id="btnGeneralImage">Importar vista explodida</button><span class="hint">JPEG, PNG, TIFF, PDF ou WebP</span></div>
+        <input id="generalImageInput" type="file" accept=".jpg,.jpeg,.png,.tif,.tiff,.pdf,.webp" hidden>
+        <p class="hint" id="overviewFile" role="status"></p>
+      </div>
+    </div>
+    <div class="panel import-panel">
+      <div class="panel-header"><h2>Referências opcionais</h2></div>
+      <div class="panel-body">
+        <div class="workflow-actions">
+          <button class="btn" id="btnStepFile">Adicionar modelo STEP</button>
+          <button class="btn" id="btnDrawingPdf">Adicionar PDF de vistas</button>
+          <input id="stepFile" type="file" accept=".stp,.step" hidden>
+          <input id="drawingPdf" type="file" accept=".pdf" hidden>
+        </div>
+        <p id="referenceStatus" class="hint" role="status">A IA usa estas vistas para conferir a posição e a orientação das peças.</p>
+        <div id="referenceList" class="reference-list"></div>
+      </div>
+    </div>
     <div id="generalEditorHost"></div>
+    <div class="workflow-actions next-actions"><button class="btn btn-primary" data-go="montagem">Ir para procedimento</button></div>
   </section>
 
   <!-- ================= TAB: MONTAGEM ================= -->
   <section id="tab-montagem" style="display:none;">
-    <div class="panel" style="margin-bottom:18px"><div class="panel-header"><h2>Blocos / procedimentos do manual</h2></div><div class="panel-body">
-      <form id="blockForm" class="block-create"><label for="blockTitle">Título do procedimento</label><input id="blockTitle" maxlength="180" required placeholder="Ex: Montagem da base"><button class="btn btn-primary">Adicionar bloco</button></form>
-      <p class="hint">Defina e ordene os procedimentos. Selecione um bloco para adicionar suas imagens.</p><div id="blockList"></div><div id="blockDetails"></div>
+    <div class="panel import-panel"><div class="panel-header"><h2>Imagens do procedimento</h2></div><div class="panel-body">
+      <div class="workflow-actions">
+        <button class="btn btn-primary" id="btnProcedureImages">Importar imagens</button>
+        <button class="btn" id="btnBatchCallouts">Gerar chamadas em lote</button>
+        <button class="btn" id="btnGenerateDraft">Gerar chamadas e passos</button>
+        <input type="file" id="procedureImages" accept=".jpg,.jpeg,.png,.tif,.tiff,.pdf,.webp" multiple hidden>
+      </div>
+      <p class="hint">Cada imagem cria um bloco. Selecione as peças e informe a quantidade de cada uma na imagem.</p>
+      <p class="hint" id="batchStatus" role="status"></p>
+      <div id="blockList"></div><div id="blockDetails"></div>
+      <details class="manual-advanced">
+        <summary>Adicionar um bloco vazio</summary>
+        <form id="blockForm" class="block-create panel-body"><label for="blockTitle">Título do procedimento</label><input id="blockTitle" maxlength="180" required placeholder="Ex.: Montagem da base"><button class="btn">Criar bloco</button></form>
+      </details>
     </div></div><div id="blockEditorHost"></div>
     <div class="montagem-layout" id="sharedEditor">
       <div>
@@ -518,7 +602,7 @@
           <div class="panel-body" style="padding:10px;">
             <div class="steps-list" id="stepsList"></div>
             <div class="add-image-btn" id="btnAddImage" style="margin-top:8px;">+ Adicionar imagem</div>
-            <input type="file" id="imageInput" accept="image/*" multiple style="display:none;">
+            <input type="file" id="imageInput" accept=".jpg,.jpeg,.png,.tif,.tiff,.pdf,.webp" multiple style="display:none;">
           </div>
         </div>
       </div>
@@ -537,25 +621,28 @@
 
       <div>
         <div class="ai-workflow-card">
-          <div class="panel-header"><h2>1. Peças visíveis na vista</h2></div>
+          <div class="panel-header"><h2>Peças visíveis na imagem</h2></div>
           <div class="panel-body" id="pecasImagemPanel" style="padding:14px;">
             <p class="hint">Adicione uma vista explodida para selecionar as peças que aparecem nela.</p>
           </div>
         </div>
 
         <div class="panel" style="margin-bottom:10px;">
-          <div class="panel-header"><h2>2. Chamadas da vista</h2></div>
+          <div class="panel-header"><h2>Chamadas da imagem</h2></div>
           <div class="panel-body" style="padding:14px;">
             <div class="callout-tools">
               <span class="hint" style="margin:0;">Cada peça mantém a letra do cadastro geral. Você pode marcar várias ocorrências da mesma peça.</span>
+              <button class="btn btn-primary btn-sm" id="btnGenerateCallouts">Gerar chamadas desta imagem</button>
               <button class="btn btn-sm" id="btnToggleMarkerMode">Posicionar chamadas: desligado</button>
             </div>
+            <p class="hint" id="calloutProgress" role="status"></p>
+            <div id="calloutStatus" role="status"></div>
             <div id="chamadasPanelBody"><p class="hint">Selecione as peças da vista e depois clique na imagem para criar A, B, C...</p></div>
           </div>
         </div>
 
         <div class="panel" style="margin-bottom:10px;">
-          <div class="panel-header"><h2>3. Orientações para a IA</h2></div>
+          <div class="panel-header"><h2>Orientações para a IA</h2></div>
           <div class="panel-body" style="padding:14px;">
             <textarea id="aiPromptNotes" class="prompt-notes" placeholder="Opcional. Ex: a chapa deve ser montada primeiro; a seta indica o sentido de inserção; não considerar o componente ao fundo..."></textarea>
             <p class="hint">Estas orientações são adicionadas ao prompt somente para esta vista. As regras de segurança e consistência do gerador continuam valendo.</p>
@@ -604,10 +691,10 @@
     </div>
     <div class="preview-toolbar">
       <div>
-        <strong>Análise conjunta e manual editável</strong>
-        <span class="hint" id="previewStatus" style="display:block;margin-top:2px;">Preencha os blocos. A IA analisará o conjunto antes de escrever os procedimentos.</span>
+        <strong>Revisão do manual</strong>
+        <span class="hint" id="previewStatus" style="display:block;margin-top:2px;">Revise os passos, as notas e as pendências antes de baixar.</span>
       </div>
-      <div><label for="detailLevel">Detalhamento</label><select id="detailLevel"><option value="detalhado">Detalhado — ações e verificações separadas</option><option value="essencial">Essencial — sequência concisa</option></select><button class="btn btn-primary" id="btnGerarIA">Analisar manual completo</button></div>
+      <div><label for="detailLevel">Detalhamento</label><select id="detailLevel"><option value="detalhado">Detalhado — ações e verificações separadas</option><option value="essencial">Essencial — sequência concisa</option></select><button class="btn btn-primary" id="btnGerarIA">Gerar chamadas e passos</button><button class="btn" id="btnReviewPdf">Baixar PDF</button></div>
     </div>
     <div id="manualReadiness" class="workflow-notice" aria-live="polite"></div><div id="globalAnalysis" class="workflow-notice"></div><p class="output-edit-hint">Clique nos resumos, instruções e notas do manual para editar. Salve um backup antes de gerar novamente.</p>
     <div id="previewValidation"></div>
@@ -635,6 +722,18 @@
 
 </main>
 
+<dialog id="inputDialog" class="input-dialog">
+  <form method="dialog">
+    <h2 id="inputDialogTitle"></h2>
+    <div id="inputDialogBody"></div>
+    <div class="workflow-actions">
+      <button class="btn" value="cancel" formnovalidate>Cancelar</button>
+      <button class="btn btn-primary" value="accept">Confirmar</button>
+    </div>
+  </form>
+</dialog>
+
+<script src="./dist/workflow.js"></script>
 <script>
 /* ============================================================
    ESTADO
@@ -646,18 +745,7 @@
      .aiPromptNotes     -> orientação adicional do autor para a análise desta vista
      .passos[]           -> instruções geradas/revisadas: {id, pecaIds:[...], chamadaIds:[...], atividade, itemId, obs, descricaoIA}
 */
-let state = {
-  titulo: '',
-  produtoFinalDescricao: '',
-  pecas: [],
-  passos: [],
-  currentStepId: null,
-  selectedCalloutId: null,
-  selectedPassoId: null,
-  markerMode: false,
-  nextPecaNum: 1,
-  nextPassoNum: 1,
-};
+let state = defaultState();
 
 const ATIVIDADES = [
   {value:'parafusar', label:'Parafusar', needs:'parafuso'},
@@ -746,10 +834,6 @@ function showConfirm(message, onConfirm){
   document.getElementById('confirmOk').addEventListener('click', ()=>{ close(); onConfirm(); });
 }
 
-function isInsideChatGPTViewer(){
-  try{ return window.self !== window.top; }catch(e){ return true; }
-}
-
 /* ============================================================
    PERSISTÊNCIA (localStorage)
    ============================================================ */
@@ -797,14 +881,14 @@ function migrarParaNovoModeloBase(){
   });
 }
 
-function load(){
+function load(stored){
   try{
-    const raw = localStorage.getItem('montagemXmlState');
-    if(raw){ const parsed = JSON.parse(raw); state = Object.assign(state, parsed); }
+    const raw = stored ? null : localStorage.getItem('montagemXmlState');
+    if(stored || raw) state = Object.assign(defaultState(), stored || JSON.parse(raw));
     migrarParaNovoModelo();
     if(typeof state.produtoFinalDescricao !== 'string') state.produtoFinalDescricao = '';
     state.pecas.forEach(p=>{ if(p.torqueNm===undefined) p.torqueNm=null; });
-  }catch(e){ console.warn('Falha ao carregar', e); }
+  }catch(e){ state=defaultState(); console.warn('Falha ao carregar', e); }
 }
 
 document.getElementById('btnNovoManual').addEventListener('click', ()=>{
@@ -826,10 +910,10 @@ document.querySelectorAll('nav.tabs button').forEach(btn=>{
   btn.addEventListener('click', ()=>{
     document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
-    ['pecas','montagem','preview','exportar'].forEach(t=>{
+    ['pecas','visao','montagem','preview','exportar'].forEach(t=>{
       document.getElementById('tab-'+t).style.display = (t===btn.dataset.tab) ? '' : 'none';
     });
-    if(btn.dataset.tab==='pecas'||btn.dataset.tab==='montagem'){state.editorContext=btn.dataset.tab==='pecas'?'geral':'bloco';if(state.editorContext==='bloco'&&!blockPages(state.currentBlockId).some(p=>p.id===state.currentStepId))state.currentStepId=blockPages(state.currentBlockId)[0]?.id||null;placeEditor();renderEditor();}
+    if(['pecas','visao','montagem'].includes(btn.dataset.tab)){state.editorContext=btn.dataset.tab!=='montagem'?'geral':'bloco';if(state.editorContext==='bloco'&&!blockPages(state.currentBlockId).some(p=>p.id===state.currentStepId))state.currentStepId=blockPages(state.currentBlockId)[0]?.id||null;placeEditor();renderEditor();}
     if(btn.dataset.tab==='exportar')renderExport();
     if(btn.dataset.tab==='preview')renderPreview();
   });
@@ -865,8 +949,8 @@ document.getElementById('btnAddPeca').addEventListener('click', ()=>{
   if(!nome){ showToast('Informe o nome da peça.', 'error'); return; }
   const chamada=document.getElementById('pecaChamada').value.trim().toUpperCase()||nextCatalogLetter();
   if(!/^[A-Z]{1,3}$/.test(chamada)||state.pecas.some(p=>p.chamada===chamada)){showToast('Use uma chamada única de 1 a 3 letras.','error');return;}
-  const piece={id:uid('p'),nome,tipo,qtd:Math.max(1,qtd),codigo,torqueNm,chamada};state.pecas.push(piece);
-  if(state.visaoGeral){state.visaoGeral.selectedPecaIds.push(piece.id);state.visaoGeral.partUsage[piece.id]=piece.qtd;}
+  const piece={id:uid('p'),nome,tipo,qtd:Math.max(1,qtd),codigo,torqueNm,chamada};
+  appendCatalogPiece(piece);
   document.getElementById('pecaChamada').value='';
   document.getElementById('pecaNome').value='';
   document.getElementById('pecaCodigo').value='';
@@ -885,34 +969,39 @@ function renderPecas(){
     wrap.innerHTML = '<div class="empty-state">Nenhuma peça cadastrada ainda.</div>';
     return;
   }
-  let rows = state.pecas.map(p=>`
-    <tr>
-      <td><strong>${escapeHtml(p.chamada)}</strong></td><td><span class="tag tag-${p.tipo}">${tipoLabel(p.tipo)}</span></td>
-      <td><strong>${escapeHtml(p.nome)}</strong></td>
-      <td>${p.codigo ? escapeHtml(p.codigo) : '<span style="color:var(--ink-soft)">—</span>'}</td>
-      <td>${p.qtd}</td>
-      <td>${p.torqueNm ? escapeHtml(String(p.torqueNm).replace('.',',')) + ' N·m' : '<span style="color:var(--ink-soft)">—</span>'}</td>
-      <td><button class="icon-btn" onclick="removePeca('${p.id}')" title="Remover">✕</button></td>
-    </tr>
-  `).join('');
-  wrap.innerHTML = `
-    <table>
-      <thead><tr><th>Chamada</th><th>Tipo</th><th>Nome</th><th>Código</th><th>Qtd.</th><th>Torque</th><th></th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table>`;
+  wrap.innerHTML = `<table class="catalog-edit">
+    <thead><tr><th>Chamada</th><th>Nome</th><th>Quantidade</th></tr></thead>
+    <tbody>${state.pecas.map(piece=>`<tr>
+      <td><span class="catalog-label">${escapeHtml(piece.chamada)}</span></td>
+      <td>
+        <strong>${escapeHtml(catalogName(piece))}</strong>
+        ${piece.codigo ? `<div class="hint">Cód. ${escapeHtml(piece.codigo)}</div>` : ''}
+      </td>
+      <td>
+        ${piece.qtd}
+        <button class="icon-btn" data-piece-edit="${escapeHtml(piece.id)}" aria-label="Editar peça ${escapeHtml(piece.chamada)}">Editar</button>
+        <button class="icon-btn" data-piece-remove="${escapeHtml(piece.id)}" aria-label="Remover peça ${escapeHtml(piece.chamada)}">✕</button>
+      </td>
+    </tr>`).join('')}</tbody></table>`;
+  wrap.querySelectorAll('[data-piece-edit]').forEach(button=>button.onclick=()=>editPiece(button.dataset.pieceEdit));
+  wrap.querySelectorAll('[data-piece-remove]').forEach(button=>button.onclick=()=>removePeca(button.dataset.pieceRemove));
 }
 
 function removePeca(id){
-  const usada = state.passos.some(p=>p.chamadas.some(c=>c.pecaId===id) || p.passos.some(pa=>pa.itemId===id));
-  const doRemove = ()=>{
-    state.pecas = state.pecas.filter(p=>p.id!==id);
-    save(); renderPecas(); renderCounts();
+  const referenced = currentPages().some(page=>placed(page,id) || page.passos.some(step=>step.itemId===id || step.pecaIds?.includes(id)));
+  const remove = ()=>{
+    for(const page of currentPages()){
+      page.selectedPecaIds = page.selectedPecaIds.filter(partId=>partId!==id);
+      delete page.partUsage[id];
+      page.chamadas = page.chamadas.filter(marker=>marker.pecaId!==id);
+      page.calloutUncertainties = pageUnplaced(page).filter(item=>item.partId!==id);
+    }
+    state.pecas = state.pecas.filter(piece=>piece.id!==id);
+    save();
+    renderAll();
   };
-  if(usada){
-    showConfirm('Essa peça está referenciada em uma ou mais chamadas/passos. Remover mesmo assim? As referências ficarão inválidas.', doRemove);
-  } else {
-    doRemove();
-  }
+  if(referenced) showConfirm('Remover a peça também remove suas chamadas. Confira as instruções que mencionam essa peça depois de excluir.', remove);
+  else remove();
 }
 
 /* ============================================================
@@ -922,8 +1011,8 @@ document.getElementById('btnAddImage').addEventListener('click', ()=> document.g
 document.getElementById('imageInput').addEventListener('change',async e=>{
   const files=Array.from(e.target.files||[]),blockId=state.currentBlockId,target=state;e.target.value='';
   if(!blockId){showToast('Crie e selecione um bloco primeiro.','error');return;}
-  try{const data=await Promise.all(files.map(readImage));if(state!==target||!state.blocos.some(b=>b.id===blockId))return;
-    const pages=data.map(img=>newPage(img,blockId));state.passos.push(...pages);if(state.currentBlockId===blockId)state.currentStepId=pages[0]?.id||state.currentStepId;
+  try{const data=await readProcedureFiles(files);if(state!==target||!state.blocos.some(b=>b.id===blockId)||!data.length)return;
+    const pages=data.map(({image})=>newPage(image,blockId));state.passos.push(...pages);if(state.currentBlockId===blockId)state.currentStepId=pages[0]?.id||state.currentStepId;
     save();renderEditor();renderBlocks();renderReadiness();renderCounts();
   }catch(err){showToast(err.message,'error');}
 });
@@ -1001,7 +1090,7 @@ function currentStep(){
 }
 
 function renderStage(){
-  const stage=document.getElementById('imageStage'),step=currentStep();document.getElementById('stageTitle').textContent=step?step.nome:'Imagem';document.getElementById('stageHint').textContent=step?(state.markerMode?'Clique para criar uma chamada; arraste o círculo para mover toda a chamada e a ponta da seta para ajustar direção e comprimento.':'Ative “Posicionar chamadas” para criar chamadas A, B, C...'):'';
+  const stage=document.getElementById('imageStage'),step=currentStep();document.getElementById('stageTitle').textContent=step?step.nome:'Imagem';document.getElementById('stageHint').textContent=step?(state.markerMode?'Clique para criar uma chamada; arraste o círculo para mover toda a chamada e a ponta da seta para ajustar direção e comprimento.':'Arraste os círculos ou as pontas das setas para ajustar as chamadas.'):'';
   if(!step){stage.innerHTML='<div class="stage-empty">Adicione uma vista explodida para começar.</div>';return;}
   stage.innerHTML=`<div class="stage-inner" id="stageInner"><img src="${step.imagemData}" id="stageImg"><div class="callout-layer" id="stageCalloutLayer"></div></div>`;const img=document.getElementById('stageImg');const ready=()=>{renderStageCalloutLayer();img.style.cursor=state.markerMode?'crosshair':'default';if(state.markerMode)img.addEventListener('click',onStageClick);};if(img.complete)requestAnimationFrame(ready);else img.addEventListener('load',ready,{once:true});
 }
@@ -1043,7 +1132,7 @@ function renderPecasDaImagem(){
       const used = Math.max(1, Math.min(p.qtd, parseInt(step.partUsage[p.id])||1));
       return `<div class="part-option">
         <input type="checkbox" class="visible-part-check" data-pid="${p.id}" ${checked?'checked':''} aria-label="Selecionar ${escapeHtml(p.nome)}">
-        <span class="part-main"><strong>${escapeHtml(p.chamada)} — ${escapeHtml(p.nome)}</strong>${p.codigo?`<small>${escapeHtml(p.codigo)}</small>`:''}${p.torqueNm?`<small>Torque: ${escapeHtml(String(p.torqueNm).replace('.',','))} N·m</small>`:''}</span>
+        <span class="part-main"><strong>${escapeHtml(p.chamada)} — ${escapeHtml(catalogName(p))}</strong>${p.codigo?`<small>${escapeHtml(p.codigo)}</small>`:''}${p.torqueNm?`<small>Torque: ${escapeHtml(String(p.torqueNm).replace('.',','))} N·m</small>`:''}</span>
         <span class="part-usage"><input type="number" class="part-usage-input" data-pid="${p.id}" min="1" max="${p.qtd}" step="1" inputmode="numeric" value="${used}" ${checked?'':'disabled'} title="Quantidade usada nesta vista"><small>usado nesta vista / total ${p.qtd}</small></span>
       </div>`;
     }).join('');
@@ -1105,6 +1194,7 @@ function renderAiImageState(){
   const status = document.getElementById('aiImageStatus');
   const summary = document.getElementById('aiAnalysisSummary');
   const step = currentStep();
+  renderCalloutStatus(step);
   const promptBox = document.getElementById('aiPromptNotes');
   if(promptBox && document.activeElement!==promptBox) promptBox.value = step ? (step.aiPromptNotes||'') : '';
   if(!status || !summary) return;
@@ -1388,6 +1478,7 @@ function legendTextForCallout(step, c, idx){
   const letra = letterForCallout(c);
   if(!p) return `${letra}—[peça não definida]`;
   const extras=[];
+  if(p.especificacao) extras.push(p.especificacao);
   if(p.codigo) extras.push(`cód. ${p.codigo}`);
   if(p.torqueNm) extras.push(`torque ${String(p.torqueNm).replace('.',',')} N·m`);
   return `${letra}—${p.nome}${extras.length?', '+extras.join(', '):''}`;
@@ -1395,7 +1486,7 @@ function legendTextForCallout(step, c, idx){
 
 function renderLegendHtml(step){
   if(!step || !(step.chamadas||[]).length) return '';
-  return `<div class="preview-legend">${step.chamadas.map((c,idx)=>{
+  return `<div class="preview-legend">${uniqueCallouts(step).map((c,idx)=>{
     const invalid=!c.pecaId || !state.pecas.some(p=>p.id===c.pecaId);
     return `<span class="preview-legend-item ${invalid?'invalid':''}"><span class="preview-legend-letter">${escapeHtml(letterForCallout(c))}</span>—${escapeHtml(legendTextForCallout(step,c,idx).replace(/^.*?—/,''))}</span>`;
   }).join('')}</div>`;
@@ -1414,6 +1505,7 @@ function detectSpecificationTokens(text, step){
   });
   // Código/SKU cadastrado é especificação e não deve aparecer no step.
   (state.pecas||[]).forEach(p=>{
+    if(p.especificacao && value.toLowerCase().includes(String(p.especificacao).toLowerCase())) found.push(`especificação: “${p.especificacao}”`);
     if(p.codigo && value.toLowerCase().includes(String(p.codigo).toLowerCase())) found.push(`código: “${p.codigo}”`);
   });
   return [...new Set(found)];
@@ -1482,7 +1574,10 @@ function validatePage(step,pageIndex){
   const selectedIds=step.selectedPecaIds||[];
   selectedIds.forEach(pid=>{
     const p=state.pecas.find(x=>x.id===pid); if(!p) return;
-    if(!(step.chamadas||[]).some(c=>c.pecaId===pid)) issues.push({severity:'error',rule:'R1',pageIndex,pageId:step.id,message:`“${p.nome}” está selecionado para a vista, mas não possui chamada.`});
+    if(!(step.chamadas||[]).some(c=>c.pecaId===pid)) {
+      const pending = pageUnplaced(step).find(item => item.partId === pid);
+      issues.push({severity:pending?'warning':'error',rule:'R1',pageIndex,pageId:step.id,message:`(${p.chamada}) ${p.nome}: ${pending?.reason || 'chamada por posicionar.'}`});
+    }
   });
   (step.chamadas||[]).forEach((c,idx)=>{
     const letter=letterForCallout(c);
@@ -1541,12 +1636,12 @@ function renderCurrentStepValidation(){
    ============================================================ */
 const AI_SERVER_STORAGE = 'montagemXmlOpenAiServer';
 function getAiServer(){
-  try{ return localStorage.getItem(AI_SERVER_STORAGE) || 'http://localhost:3000/api/analyze'; }catch(e){ return 'http://localhost:3000/api/analyze'; }
+  try{ return localStorage.getItem(AI_SERVER_STORAGE) || (location.protocol==='file:' ? 'http://localhost:3000/api/analyze' : location.origin+'/api/analyze'); }catch(e){ return 'http://localhost:3000/api/analyze'; }
 }
 function setAiServer(url){ try{ localStorage.setItem(AI_SERVER_STORAGE, url); }catch(e){} }
 document.getElementById('aiServerInput').value = getAiServer();
 document.getElementById('btnSalvarAiServer').addEventListener('click', ()=>{
-  const val = document.getElementById('aiServerInput').value.trim() || 'http://localhost:3000/api/analyze';
+  const val = document.getElementById('aiServerInput').value.trim() || location.origin+'/api/analyze';
   setAiServer(val);
   showToast('Endereço do servidor de IA salvo.', 'success');
 });
@@ -1607,7 +1702,7 @@ function selectedPartsPayload(step){
   const ids = step.selectedPecaIds || [];
   return ids.map(id=>state.pecas.find(p=>p.id===id)).filter(Boolean).map(p=>({
     id:p.id,
-    nome:p.nome, chamada:p.chamada,
+    nome:p.nome, especificacao:p.especificacao||'', chamada:p.chamada,
     tipo:p.tipo,
     quantidadeTotal:p.qtd,
     quantidadeNestaVista: Math.max(1, Math.min(p.qtd, parseInt((step.partUsage||{})[p.id])||1)),
@@ -1644,6 +1739,10 @@ let aiGenTimer=null;
 function scheduleAutoGenerate(){renderReadiness();}
 document.getElementById('btnAnalisarImagem').addEventListener('click',()=>document.querySelector('[data-tab="preview"]').click());
 document.getElementById('btnGerarIA').addEventListener('click',()=>gerarTextosIA());
+document.getElementById('btnGenerateDraft').addEventListener('click',()=>{
+  document.querySelector('[data-tab="preview"]').click();
+  gerarTextosIA();
+});
 
 /* ============================================================
    EXPORTAÇÃO XML
@@ -1657,7 +1756,7 @@ function buildXmlBase(){
 
   xml += '  <pecas>\n';
   state.pecas.forEach(p=>{
-    xml += `    <peca id="${p.id}" tipo="${p.tipo}" nome="${esc(p.nome)}" quantidade="${p.qtd}"${p.codigo?` codigo="${esc(p.codigo)}"`:''}${p.torqueNm?` torqueNm="${p.torqueNm}"`:''}/>\n`;
+    xml += `    <peca id="${p.id}" tipo="${p.tipo}" nome="${esc(p.nome)}" quantidade="${p.qtd}"${p.especificacao?` especificacao="${esc(p.especificacao)}"`:''}${p.codigo?` codigo="${esc(p.codigo)}"`:''}${p.torqueNm?` torqueNm="${p.torqueNm}"`:''}/>\n`;
   });
   xml += '  </pecas>\n';
 
@@ -1675,7 +1774,7 @@ function buildXmlBase(){
     });
     xml += '      </chamadas>\n';
     xml += '      <legendas>\n';
-    s.chamadas.forEach((c,cidx)=>{ const peca=state.pecas.find(p=>p.id===c.pecaId); xml += `        <legenda letra="${letterForCallout(c)}" texto="${esc(legendTextForCallout(s,c,cidx))}"${peca?` pecaId="${peca.id}"`:''}/>\n`; });
+    uniqueCallouts(s).forEach((c,cidx)=>{ const peca=state.pecas.find(p=>p.id===c.pecaId); xml += `        <legenda letra="${letterForCallout(c)}" texto="${esc(legendTextForCallout(s,c,cidx))}"${peca?` pecaId="${peca.id}"`:''}/>\n`; });
     xml += '      </legendas>\n';
     xml += '      <passos>\n';
     s.passos.forEach((pa,pidx)=>{
@@ -1760,16 +1859,8 @@ document.getElementById('btnBaixarWord').addEventListener('click',async()=>{
   finally{button.disabled=false;}
 });
 
-document.getElementById('btnBaixarPdf').addEventListener('click', ()=>{
-  if(state.passos.length === 0){ showToast('Adicione imagens e passos antes de exportar o manual.', 'error'); return; }
-  if(isInsideChatGPTViewer()){
-    showToast('A exportação em PDF usa a função de impressão do navegador, que fica bloqueada dentro de um visualizador incorporado por segurança. Baixe este arquivo e abra-o direto no navegador para gerar o PDF — funciona normalmente fora daqui.', 'error');
-    return;
-  }
-  const previewTab = document.querySelector('nav.tabs button[data-tab="preview"]');
-  if(previewTab) previewTab.click();
-  setTimeout(()=> window.print(), 350);
-});
+document.getElementById('btnBaixarPdf').addEventListener('click', downloadManualPdf);
+document.getElementById('btnReviewPdf').addEventListener('click', downloadManualPdf);
 
 /* ============================================================
    BACKUP JSON
@@ -1818,7 +1909,7 @@ function renderAllBase(){
   const markerBtn=document.getElementById('btnToggleMarkerMode'); if(markerBtn) markerBtn.textContent=state.markerMode?'Posicionar chamadas: ligado':'Posicionar chamadas: desligado';
 }
 /* Workflow v5 — shared catalog and one analysis for the complete manual. */
-function defaultState(){return {...defaultStateBase(),schemaVersion:2,blocos:[],visaoGeral:null,currentBlockId:null,editorContext:'geral',manualAnalysis:null,nivelDetalhamento:'detalhado'};}
+function defaultState(){return {...defaultStateBase(),schemaVersion:3,desenhos:[],blocos:[],visaoGeral:null,currentBlockId:null,editorContext:'geral',manualAnalysis:null,nivelDetalhamento:'detalhado'};}
 function nextCatalogLetter(){let n=0;while(state.pecas.some(p=>p.chamada===calloutLetter(n)))n++;return calloutLetter(n);}
 function letterForCallout(c){return state.pecas.find(p=>p.id===c.pecaId)?.chamada||'?';}
 function blockPages(id){return state.passos.filter(p=>p.blocoId===id);}
@@ -1837,15 +1928,20 @@ function migrarParaNovoModelo(){
       p.passos.forEach(pa=>{if(pa.descricaoIA)pa.descricaoIA=pa.descricaoIA.replace(/\(([A-Z]{1,3})\)/g,(m,l)=>letters.has(l)?'('+letters.get(l)+')':m);});
     }});
   }
-  state.schemaVersion=2;state.visaoGeral=state.visaoGeral||null;state.manualAnalysis=state.manualAnalysis||null;
+  state.schemaVersion=3;state.desenhos=Array.isArray(state.desenhos)?state.desenhos:[];state.visaoGeral=state.visaoGeral||null;state.manualAnalysis=state.manualAnalysis||null;
   state.currentBlockId=state.blocos.some(b=>b.id===state.currentBlockId)?state.currentBlockId:state.blocos[0]?.id||null;
-  state.editorContext='geral';if(!['detalhado','essencial'].includes(state.nivelDetalhamento))state.nivelDetalhamento='detalhado';
+  state.editorContext='geral';
+  if(state.visaoGeral){
+    state.visaoGeral.selectedPecaIds=state.pecas.map(piece=>piece.id);
+    state.visaoGeral.partUsage=Object.fromEntries(state.pecas.map(piece=>[piece.id,piece.qtd]));
+  }
+  if(!['detalhado','essencial'].includes(state.nivelDetalhamento))state.nivelDetalhamento='detalhado';
 }
 let storageWarning=false;
-function save(){try{localStorage.setItem('montagemXmlState',JSON.stringify(state));}catch{if(!storageWarning){storageWarning=true;showToast('Armazenamento do navegador cheio. Salve um backup para preservar suas alterações.','error');}}}
+function save(){persistProject();}
 function renderEditor(){renderSteps();renderStage();renderPecasDaImagem();renderChamadasList();renderPassoList();renderPassoEditor();renderAiImageState();}
 function placeEditor(){const general=state.editorContext==='geral',editor=document.getElementById('sharedEditor');document.getElementById(general?'generalEditorHost':'blockEditorHost').appendChild(editor);editor.classList.toggle('general-editor',general);}
-function renderAll(){placeEditor();renderBlocks();renderAllBase();document.getElementById('detailLevel').value=state.nivelDetalhamento||'detalhado';renderReadiness();}
+function renderAll(){placeEditor();renderBlocks();renderAllBase();renderReferences();document.getElementById('detailLevel').value=state.nivelDetalhamento||'detalhado';renderReadiness();}
 function renderCounts(){document.getElementById('countPecas').textContent=state.pecas.length;document.getElementById('countPassos').textContent=state.blocos.length;}
 function renderSteps(){const pages=state.passos;try{state.passos=blockPages(state.currentBlockId);renderStepsBase();}finally{state.passos=pages;}}
 function renderBlocks(){
@@ -1862,66 +1958,143 @@ function moveBlock(id,delta){const i=state.blocos.findIndex(b=>b.id===id),j=i+de
 function removeBlock(id){const b=state.blocos.find(b=>b.id===id);if(!b)return;showConfirm(`Excluir o bloco “${b.titulo}” e todas as suas imagens e instruções? Salve um backup para recuperá-lo.`,()=>{state.blocos=state.blocos.filter(b=>b.id!==id);state.passos=state.passos.filter(p=>p.blocoId!==id);if(state.currentBlockId===id){state.currentBlockId=state.blocos[0]?.id||null;state.currentStepId=blockPages(state.currentBlockId)[0]?.id||null;state.selectedCalloutId=null;state.selectedPassoId=null;}save();renderAll();});}
 function moveImagem(id,delta){const pages=blockPages(state.currentBlockId),i=pages.findIndex(p=>p.id===id),j=i+delta;if(i<0||j<0||j>=pages.length)return;const a=state.passos.indexOf(pages[i]),b=state.passos.indexOf(pages[j]);[state.passos[a],state.passos[b]]=[state.passos[b],state.passos[a]];renumerarImagens();save();renderEditor();renderPreview();}
 function newPage(imagemData,blocoId=null){return {id:uid('s'),nome:blocoId?'Imagem '+state.nextPassoNum++:'Visão geral do kit',blocoId,imagemData,selectedPecaIds:blocoId?[]:state.pecas.map(p=>p.id),partUsage:blocoId?{}:Object.fromEntries(state.pecas.map(p=>[p.id,p.qtd])),chamadas:[],passos:[],aiPromptNotes:'',aiAnalysis:null,aiUpdatedAt:null};}
-function readImage(file){return new Promise((resolve,reject)=>{
-  if(!['image/png','image/jpeg','image/webp'].includes(file.type)){reject(Error('Use uma imagem PNG, JPEG ou WebP.'));return;}
-  const url=URL.createObjectURL(file),img=new Image();img.onload=()=>{try{const scale=Math.min(1,2200/Math.max(img.naturalWidth,img.naturalHeight)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(img.naturalWidth*scale));c.height=Math.max(1,Math.round(img.naturalHeight*scale));const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(img,0,0,c.width,c.height);resolve(c.toDataURL('image/jpeg',.92));}catch{reject(Error('Não foi possível preparar a imagem.'));}finally{URL.revokeObjectURL(url);}};img.onerror=()=>{URL.revokeObjectURL(url);reject(Error('Imagem inválida.'));};img.src=url;
-});}
 document.getElementById('blockForm').addEventListener('submit',e=>{e.preventDefault();const input=document.getElementById('blockTitle'),titulo=input.value.trim();if(!titulo)return;const block={id:uid('b'),titulo,orientacoes:''};state.blocos.push(block);input.value='';selectBlock(block.id);renderCounts();renderReadiness();});
 document.getElementById('btnGeneralImage').onclick=()=>{const open=()=>document.getElementById('generalImageInput').click();if(state.visaoGeral)showConfirm('Substituir a imagem geral? Será necessário marcar novamente as chamadas. As peças e os textos serão preservados.',open);else open();};
-document.getElementById('generalImageInput').addEventListener('change',async e=>{const file=e.target.files[0],target=state;e.target.value='';if(!file)return;try{const data=await readImage(file);if(state!==target)return;state.visaoGeral=newPage(data);state.editorContext='geral';save();placeEditor();renderEditor();renderReadiness();}catch(err){showToast(err.message,'error');}});
+document.getElementById('generalImageInput').addEventListener('change',async e=>{const file=e.target.files[0],target=state;e.target.value='';if(!file)return;try{const data=await readImage(file);if(state!==target)return;if(!data)return;state.visaoGeral={...newPage(data),nome:'Vista explodida',fileName:file.name};save();renderReferences();renderEditor();renderReadiness();}catch(err){showToast(err.message,'error');}});
 document.getElementById('detailLevel').onchange=e=>{state.nivelDetalhamento=e.target.value;save();renderReadiness();};
-function manualPayload(){const page=p=>({id:p.id,name:p.nome,imageDataUrl:p.imagemData,parts:selectedPartsPayload(p),callouts:calloutsPayload(p),userInstructions:p.aiPromptNotes||''});return {manualTitle:state.titulo,productDescription:state.produtoFinalDescricao,detailLevel:state.nivelDetalhamento||'detalhado',parts:state.pecas.map(p=>({id:p.id,nome:p.nome,chamada:p.chamada,tipo:p.tipo,quantidadeTotal:p.qtd,codigo:p.codigo||null,torqueNm:p.torqueNm||null})),overview:state.visaoGeral?page(state.visaoGeral):null,blocks:state.blocos.map(b=>({id:b.id,title:b.titulo,userInstructions:b.orientacoes||'',pages:blockPages(b.id).map(page)}))};}
+function manualPayload(){
+  const page = item => ({
+    id:item.id, name:item.nome, imageDataUrl:item.imagemData, parts:selectedPartsPayload(item),
+    callouts:calloutsPayload(item), unplaced:pageUnplaced(item), userInstructions:item.aiPromptNotes||''
+  });
+  return {
+    manualTitle:state.titulo, productDescription:state.produtoFinalDescricao, detailLevel:state.nivelDetalhamento,
+    parts:state.pecas.map(piece=>({
+      id:piece.id, nome:piece.nome, especificacao:piece.especificacao||'', chamada:piece.chamada, tipo:piece.tipo,
+      quantidadeTotal:piece.qtd, codigo:piece.codigo||null, torqueNm:piece.torqueNm||null
+    })),
+    overview:state.visaoGeral ? page(state.visaoGeral) : null,
+    drawings:studyViews(),
+    blocks:state.blocos.map(block=>({id:block.id,title:block.titulo,userInstructions:block.orientacoes||'',pages:blockPages(block.id).map(page)}))
+  };
+}
+function manualSignature(payload){
+  // A imagem só muda ao receber um novo ID de página ou de arquivo de apoio.
+  return JSON.stringify(payload,(key,value)=>key==='imageDataUrl' ? undefined : value);
+}
+function draftSignature(){
+  return JSON.stringify({
+    summary:state.manualAnalysis?.summary,
+    blocks:state.blocos.map(block=>block.aiAnalysis?.summary),
+    pages:state.passos.map(page=>page.passos)
+  });
+}
 function manualProblems(){
-  const issues=[],catalog=new Map(state.pecas.map(p=>[p.id,p]));
-  if(!state.pecas.length)issues.push('Cadastre as peças do conjunto.');if(!state.visaoGeral)issues.push('Insira a imagem geral do kit.');if(!state.blocos.length)issues.push('Crie os blocos/procedimentos.');
-  if(state.passos.length+1>24)issues.push('Use até 24 imagens no total.');if(state.blocos.length>40)issues.push('Use até 40 blocos.');
-  for(const b of state.blocos){if(!b.titulo.trim())issues.push('Preencha o título de cada bloco.');if(!blockPages(b.id).length)issues.push(`Adicione imagens ao bloco “${b.titulo}”.`);}
-  for(const p of [state.visaoGeral,...orderedPages()].filter(Boolean)){
-    const title=p===state.visaoGeral?'Imagem geral':state.blocos.find(b=>b.id===p.blocoId).titulo+' / '+p.nome;
-    if(!p.selectedPecaIds.length)issues.push(`${title}: selecione as peças visíveis.`);
-    if(p.selectedPecaIds.some(id=>!catalog.has(id)))issues.push(`${title}: há uma peça removida do cadastro.`);
-    const required=p===state.visaoGeral?state.pecas.map(p=>p.id):p.selectedPecaIds;
-    if(required.some(id=>!p.chamadas.some(c=>c.pecaId===id)))issues.push(`${title}: posicione uma chamada para cada peça.`);
-    if(p.chamadas.some(c=>!catalog.has(c.pecaId)||!p.selectedPecaIds.includes(c.pecaId)||['x','y','tipX','tipY'].some(k=>c[k]==null||!Number.isFinite(Number(c[k])))))issues.push(`${title}: revise as peças e posições das chamadas.`);
-  }return issues;
+  const issues=[];
+  if(!state.pecas.length) issues.push('Cadastre as peças do conjunto.');
+  if(!state.visaoGeral) issues.push('Importe a vista explodida.');
+  if(!state.blocos.length) issues.push('Importe as imagens do procedimento.');
+  if(state.passos.length+1>24) issues.push('Use até 24 imagens no total.');
+  if(state.blocos.length>40) issues.push('Use até 40 blocos.');
+  for(const block of state.blocos){
+    if(!block.titulo.trim()) issues.push('Preencha o título de cada bloco.');
+    if(!blockPages(block.id).length) issues.push(`Adicione uma imagem ao bloco “${block.titulo}”.`);
+  }
+  for(const page of currentPages()){
+    const title=page===state.visaoGeral?'Vista explodida':state.blocos.find(block=>block.id===page.blocoId).titulo;
+    if(!page.selectedPecaIds.length) issues.push(`${title}: selecione as peças visíveis.`);
+    if(page.selectedPecaIds.some(id=>!pieceById(id))) issues.push(`${title}: revise os itens do catálogo.`);
+    if(page.chamadas.some(marker=>!page.selectedPecaIds.includes(marker.pecaId))) issues.push(`${title}: associe uma peça a cada chamada existente.`);
+  }
+  return issues;
 }
 function uncertaintiesHtml(items){return items?.length?`<div class="review-notes"><strong>Pendências para revisão técnica</strong><ul>${items.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul></div>`:'';}
-function renderReadiness(){const box=document.getElementById('manualReadiness'),issues=manualProblems();box.innerHTML=issues.length?'<strong>Antes da análise conjunta</strong><ul>'+issues.map(x=>'<li>'+escapeHtml(x)+'</li>').join('')+'</ul>':'<strong>Pronto para analisar o conjunto.</strong> Todas as imagens e procedimentos serão enviados juntos.';box.classList.toggle('ready',!issues.length);if(state.manualAnalysis&&state.manualAnalysis.signature!==JSON.stringify(manualPayload()))box.innerHTML+='<p class="required-note">Os dados mudaram desde a última análise. Os textos foram preservados; analise novamente quando terminar.</p>';document.getElementById('globalAnalysis').innerHTML=state.manualAnalysis?'<strong>Leitura do conjunto</strong><p>'+escapeHtml(state.manualAnalysis.summary)+'</p>'+uncertaintiesHtml(state.manualAnalysis.uncertainties):'';}
-function validateManual(){const issues=validateManualBase();manualProblems().forEach(message=>issues.push({rule:'Fluxo',severity:'error',message}));if(state.visaoGeral)issues.push(...validatePage(state.visaoGeral,-1).map(i=>({...i,pageIndex:undefined,message:'Visão geral: '+i.message})));(state.manualAnalysis?.uncertainties||[]).forEach(message=>issues.push({rule:'R6',severity:'warning',message}));state.blocos.forEach(b=>(b.aiAnalysis?.uncertainties||[]).forEach(message=>issues.push({rule:'R6',severity:'warning',message:b.titulo+': '+message})));if(state.manualAnalysis&&state.manualAnalysis.signature!==JSON.stringify(manualPayload()))issues.push({rule:'Revisão',severity:'warning',message:'Dados alterados após a análise conjunta.'});return issues;}
+function renderReadiness(){const box=document.getElementById('manualReadiness'),issues=manualProblems();box.innerHTML=issues.length?'<strong>Antes da análise conjunta</strong><ul>'+issues.map(x=>'<li>'+escapeHtml(x)+'</li>').join('')+'</ul>':'<strong>Pronto para analisar o conjunto.</strong> A IA completa as chamadas pendentes e analisa as imagens na ordem dos blocos.';box.classList.toggle('ready',!issues.length);if(state.manualAnalysis&&state.manualAnalysis.signature!==manualSignature(manualPayload()))box.innerHTML+='<p class="required-note">Os dados mudaram desde a última análise. Os textos foram preservados; analise novamente quando terminar.</p>';document.getElementById('globalAnalysis').innerHTML=state.manualAnalysis?'<strong>Leitura do conjunto</strong><p>'+escapeHtml(state.manualAnalysis.summary)+'</p>'+uncertaintiesHtml(state.manualAnalysis.uncertainties):'';}
+function validateManual(){const issues=validateManualBase();manualProblems().forEach(message=>issues.push({rule:'Fluxo',severity:'error',message}));if(state.visaoGeral)issues.push(...validatePage(state.visaoGeral,-1).map(i=>({...i,pageIndex:undefined,message:'Visão geral: '+i.message})));(state.manualAnalysis?.uncertainties||[]).forEach(message=>issues.push({rule:'R6',severity:'warning',message}));state.blocos.forEach(b=>(b.aiAnalysis?.uncertainties||[]).forEach(message=>issues.push({rule:'R6',severity:'warning',message:b.titulo+': '+message})));if(state.manualAnalysis&&state.manualAnalysis.signature!==manualSignature(manualPayload()))issues.push({rule:'Revisão',severity:'warning',message:'Dados alterados após a análise conjunta.'});return issues;}
 function validateGlobalResponse(input,result){
   const fail=()=>{throw Error('Resposta global incompleta ou inválida. Os textos anteriores foram preservados.');},unique=a=>new Set(a).size===a.length,strings=a=>Array.isArray(a)&&a.every(x=>typeof x==='string');
   if(!result||typeof result.summary!=='string'||!strings(result.uncertainties)||!Array.isArray(result.blocks)||result.blocks.length!==input.blocks.length||!unique(result.blocks.map(b=>b.blockId)))fail();
   for(const b of input.blocks){const out=result.blocks.find(x=>x.blockId===b.id);if(!out||typeof out.summary!=='string'||!strings(out.uncertainties)||!strings(out.dependencies)||out.dependencies.some(id=>id===b.id||!input.blocks.some(b=>b.id===id))||!Array.isArray(out.pages)||out.pages.length!==b.pages.length||!unique(out.pages.map(p=>p.pageId)))fail();for(const p of b.pages){const v=out.pages.find(x=>x.pageId===p.id);if(!v||typeof v.summary!=='string'||!strings(v.uncertainties)||!Array.isArray(v.steps))fail();for(const step of v.steps){if(typeof step.instruction!=='string'||!step.instruction.trim()||typeof step.notes!=='string'||!ATIVIDADES.some(a=>a.value===step.activity)||!['alta','media','baixa'].includes(step.confidence)||!strings(step.partIds)||!strings(step.hardwareIds)||!strings(step.calloutIds))fail();if([...step.partIds,...step.hardwareIds].some(id=>!p.parts.some(p=>p.id===id))||step.calloutIds.some(id=>!p.callouts.some(c=>c.id===id)))fail();}}}
 }
 let analysisRunning=false;
-async function gerarTextosIA(opts={}){
-  if(analysisRunning)return;const issues=manualProblems();if(issues.length){showToast(issues[0],'error');renderReadiness();return;}
-  if(!opts.confirmed&&state.passos.some(p=>p.passos.length)){showConfirm('Uma nova análise substituirá todas as instruções e notas, incluindo suas edições. Salve um backup para manter esta versão. Continuar?',()=>gerarTextosIA({confirmed:true}));return;}
-  const payload=manualPayload(),signature=JSON.stringify(payload),target=state,button=document.getElementById('btnGerarIA'),status=document.getElementById('previewStatus'),controller=new AbortController();
-  analysisRunning=true;button.disabled=true;button.textContent='Analisando o conjunto…';status.textContent='A IA está examinando todas as imagens e dependências. Isso pode levar alguns minutos.';const timer=setTimeout(()=>controller.abort(),270000);
+async function gerarTextosIA({ confirmed = false } = {}){
+  if(analysisRunning || calloutsRunning) return;
+  const issues=manualProblems();
+  if(issues.length){
+    showToast(issues[0],'error');
+    renderReadiness();
+    return;
+  }
+  if(!confirmed && state.passos.some(page=>page.passos.length)){
+    showConfirm('Uma nova geração substitui os passos e as notas atuais. Salve um backup para guardar esta versão. Continuar?',()=>gerarTextosIA({confirmed:true}));
+    return;
+  }
+
+  const target=state;
+  const originalDraft=draftSignature();
+  const status=document.getElementById('previewStatus');
+  const button=document.getElementById('btnGerarIA');
+  const buttons=[button,...['btnGenerateDraft','btnBatchCallouts'].map(id=>document.getElementById(id))];
+  analysisRunning=true;
+  buttons.forEach(item=>item.disabled=true);
+  renderCalloutStatus(currentStep());
+  button.textContent='Gerando manual…';
   try{
-    const url=new URL(getAiServer());url.pathname=url.pathname.replace(/\/api\/analyze(?:-manual)?\/?$/,'/api/analyze-manual');if(!url.pathname.endsWith('/api/analyze-manual'))throw Error('Configure o servidor com endereço terminando em /api/analyze.');
-    if(new Blob([signature]).size>30*1024*1024)throw Error('O manual excede 30 MB. Reduza as imagens.');
-    const response=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:signature,signal:controller.signal}),result=await response.json();if(!response.ok)throw Error(result.error||'Falha na análise.');
-    if(state!==target||JSON.stringify(manualPayload())!==signature)throw Error('O manual mudou durante a análise. Seus textos foram preservados; gere novamente.');
+    if(currentPages().some(page=>missingParts(page).length)){
+      status.textContent='Localizando as peças sem chamada…';
+      const overview=state.visaoGeral;
+      await generateCalloutPages([overview],AbortSignal.timeout(260000));
+      if(state!==target) throw new Error('O manual mudou durante a análise.');
+      await generateCalloutPages(orderedPages(),AbortSignal.timeout(260000));
+    }
+    if(state!==target || originalDraft!==draftSignature() || manualProblems().length){
+      throw new Error('O manual mudou durante a análise. Seus textos foram preservados; gere novamente.');
+    }
+    const payload=manualPayload();
+    const signature=manualSignature(payload);
+    status.textContent='Analisando as imagens e escrevendo os passos…';
+    const result=await postAssembly('analyze-manual',payload,AbortSignal.timeout(260000));
+    if(state!==target || manualSignature(manualPayload())!==signature || originalDraft!==draftSignature()){
+      throw new Error('O manual mudou durante a análise. Seus textos foram preservados; gere novamente.');
+    }
     validateGlobalResponse(payload,result);
-    for(const b of result.blocks){state.blocos.find(x=>x.id===b.blockId).aiAnalysis={summary:b.summary,dependencies:b.dependencies,uncertainties:b.uncertainties};for(const p of b.pages)applyAiAnalysis(state.passos.find(x=>x.id===p.pageId),p);}
-    state.manualAnalysis={summary:result.summary,uncertainties:result.uncertainties,signature,updatedAt:new Date().toISOString()};state.selectedPassoId=null;save();renderAll();status.textContent='Análise conjunta concluída. Revise as pendências e edite o manual abaixo.';showToast('Manual gerado com o contexto completo.','success');
-  }catch(err){const message=err.name==='AbortError'?'A análise excedeu o tempo de espera. Seus textos foram preservados.':err.message;status.textContent=message;showToast(message,'error');}finally{clearTimeout(timer);analysisRunning=false;button.disabled=false;button.textContent='Analisar manual completo';}
+    for(const block of result.blocks){
+      state.blocos.find(item=>item.id===block.blockId).aiAnalysis={summary:block.summary,dependencies:block.dependencies,uncertainties:block.uncertainties};
+      for(const page of block.pages) applyAiAnalysis(state.passos.find(item=>item.id===page.pageId),page);
+    }
+    state.manualAnalysis={summary:result.summary,uncertainties:result.uncertainties,signature,updatedAt:new Date().toISOString()};
+    state.selectedPassoId=null;
+    save();
+    renderAll();
+    status.textContent='Manual gerado. Revise as chamadas, os passos e as pendências antes de baixar.';
+    showToast('Manual disponível para revisão.','success');
+  }catch(error){
+    const message=['AbortError','TimeoutError'].includes(error.name) ? 'A análise excedeu o tempo de espera. Seus textos foram preservados.' : error.message;
+    status.textContent=message;
+    showToast(message,'error');
+  }finally{
+    analysisRunning=false;
+    buttons.forEach(item=>item.disabled=false);
+    renderCalloutStatus(currentStep());
+    button.textContent='Gerar chamadas e passos';
+  }
 }
-function catalogHtml(){return `<table class="catalog-output"><thead><tr><th>Chamada</th><th>Componente</th><th>Quantidade total</th><th>Especificações</th></tr></thead><tbody>${state.pecas.map(p=>`<tr><td>${escapeHtml(p.chamada)}</td><td>${escapeHtml(p.nome)}</td><td>${p.qtd}</td><td>${escapeHtml([p.codigo,p.torqueNm?'Torque: '+p.torqueNm+' N·m':''].filter(Boolean).join(' · '))}</td></tr>`).join('')}</tbody></table>`;}
+function catalogHtml(){
+  return `<table class="catalog-output"><thead><tr><th>Chamada</th><th>Nome</th><th>Quantidade</th></tr></thead>
+    <tbody>${state.pecas.map(piece=>`<tr><td>${escapeHtml(piece.chamada)}</td><td>${escapeHtml(catalogName(piece))}</td><td>${piece.qtd}</td></tr>`).join('')}</tbody></table>`;
+}
 function outputImage(p){return `<div class="preview-image-inner"><img src="${p.imagemData}" alt="${escapeHtml(p.nome)}"><div class="callout-layer preview-callout-layer" data-preview-step-id="${p.id}"></div></div>${renderLegendHtml(p)}`;}
 function renderPreview(){
   renderReadiness();renderCurrentStepValidation();renderValidationPanel(document.getElementById('previewValidation'),validateManual(),{title:'Validação automática antes da exportação',max:16});
   let html=`<h1 class="preview-title">${escapeHtml(state.titulo||'Manual de montagem sem título')}</h1><p><strong>Produto final:</strong> ${escapeHtml(state.produtoFinalDescricao||'')}</p><h2>Peças e visão geral</h2>`;
-  if(state.visaoGeral)html+=`<div class="overview-output">${outputImage(state.visaoGeral)}</div>`;html+=catalogHtml();
+  if(state.visaoGeral)html+=`<div class="overview-output">${outputImage(state.visaoGeral)}${uncertaintiesHtml(sourceWarnings(state.visaoGeral))}</div>`;html+=catalogHtml();
   if(state.manualAnalysis)html+=`<strong>Visão do conjunto</strong><div class="output-step-text" contenteditable="plaintext-only" role="textbox" aria-label="Resumo do conjunto" data-global-summary>${escapeHtml(state.manualAnalysis.summary)}</div>${uncertaintiesHtml(state.manualAnalysis.uncertainties)}`;
   state.blocos.forEach((b,i)=>{
     html+=`<h2 class="manual-block-heading">${i+1}. ${escapeHtml(b.titulo)}</h2>`;
     if(b.aiAnalysis){html+=`<div class="output-step-text" contenteditable="plaintext-only" role="textbox" aria-label="Resumo do procedimento" data-block-summary="${b.id}">${escapeHtml(b.aiAnalysis.summary)}</div>`;if(b.aiAnalysis.dependencies.length)html+=`<p><strong>Pré-requisitos:</strong> ${escapeHtml(b.aiAnalysis.dependencies.map(id=>state.blocos.find(b=>b.id===id)?.titulo||'[bloco removido]').join('; '))}</p>`;html+=uncertaintiesHtml(b.aiAnalysis.uncertainties);}
     let num=0;for(const p of blockPages(b.id)){
       const items=p.passos.length?p.passos.map(pa=>`<li><span class="step-num">${++num}.</span><div style="flex:1"><div class="output-step-text" contenteditable="plaintext-only" role="textbox" aria-label="Texto do passo ${num}" data-page="${p.id}" data-instruction="${pa.id}">${escapeHtml(instrucaoTexto(pa,p))}</div><div class="output-note" contenteditable="plaintext-only" role="textbox" aria-label="Nota do passo ${num}" data-page="${p.id}" data-note="${pa.id}">${escapeHtml(pa.obs||'')}</div></div></li>`).join(''):'<li>Nenhum passo gerado nesta imagem.</li>';
-      html+=`<div class="preview-block"><div>${outputImage(p)}</div><div><ol class="preview-steps">${items}</ol>${uncertaintiesHtml(p.aiAnalysis?.uncertainties)}</div></div>`;
+      html+=`<div class="preview-block"><div>${outputImage(p)}</div><div><ol class="preview-steps">${items}</ol>${uncertaintiesHtml([...sourceWarnings(p),...(p.aiAnalysis?.uncertainties||[])])}</div></div>`;
     }
   });
   if(!state.blocos.length)html+='<p>Crie os blocos e adicione as imagens para preparar o manual.</p>';
@@ -1954,13 +2127,13 @@ async function buildWordHtml(){
   const image=p=>`<img src="${images.get(p.id)}" style="width:100%;max-width:520px">${renderLegendHtml(p)}`;
   let body=`<h1>${escapeHtml(state.titulo||'Manual de montagem')}</h1><p>${escapeHtml(state.produtoFinalDescricao||'')}</p><h2>Peças e visão geral</h2>`;if(state.visaoGeral)body+=image(state.visaoGeral);body+=catalogHtml();
   if(state.manualAnalysis)body+=`<p><strong>Visão do conjunto:</strong> ${escapeHtml(state.manualAnalysis.summary)}</p>${uncertaintiesHtml(state.manualAnalysis.uncertainties)}`;
-  state.blocos.forEach((b,i)=>{body+=`<h2>${i+1}. ${escapeHtml(b.titulo)}</h2>`;if(b.aiAnalysis){body+=`<p>${escapeHtml(b.aiAnalysis.summary)}</p>`;if(b.aiAnalysis.dependencies.length)body+=`<p><strong>Pré-requisitos:</strong> ${escapeHtml(b.aiAnalysis.dependencies.map(id=>state.blocos.find(b=>b.id===id)?.titulo||'[bloco removido]').join('; '))}</p>`;body+=uncertaintiesHtml(b.aiAnalysis.uncertainties);}let n=0;for(const p of blockPages(b.id)){body+=`<table style="width:100%;border-collapse:collapse;margin-bottom:24px"><tr><td style="width:38%;vertical-align:top;padding:10px">${image(p)}</td><td style="vertical-align:top;padding:10px">${p.passos.map(pa=>`<p><strong>${++n}.</strong> ${escapeHtml(instrucaoTexto(pa,p))}</p>${pa.obs?`<p><strong>NOTA:</strong> ${escapeHtml(pa.obs)}</p>`:''}`).join('')}${uncertaintiesHtml(p.aiAnalysis?.uncertainties)}</td></tr></table>`;}});
+  state.blocos.forEach((b,i)=>{body+=`<h2>${i+1}. ${escapeHtml(b.titulo)}</h2>`;if(b.aiAnalysis){body+=`<p>${escapeHtml(b.aiAnalysis.summary)}</p>`;if(b.aiAnalysis.dependencies.length)body+=`<p><strong>Pré-requisitos:</strong> ${escapeHtml(b.aiAnalysis.dependencies.map(id=>state.blocos.find(b=>b.id===id)?.titulo||'[bloco removido]').join('; '))}</p>`;body+=uncertaintiesHtml(b.aiAnalysis.uncertainties);}let n=0;for(const p of blockPages(b.id)){body+=`<table style="width:100%;border-collapse:collapse;margin-bottom:24px"><tr><td style="width:38%;vertical-align:top;padding:10px">${image(p)}</td><td style="vertical-align:top;padding:10px">${p.passos.map(pa=>`<p><strong>${++n}.</strong> ${escapeHtml(instrucaoTexto(pa,p))}</p>${pa.obs?`<p><strong>NOTA:</strong> ${escapeHtml(pa.obs)}</p>`:''}`).join('')}${uncertaintiesHtml([...sourceWarnings(p),...(p.aiAnalysis?.uncertainties||[])])}</td></tr></table>`;}});
   return '<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+escapeHtml(state.titulo||'Manual')+'</title></head><body style="font-family:Arial,sans-serif">'+body+'</body></html>';
 }
 function downloadBlob(blob,name){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 
-load();
-renderAll();
+initializeWorkflow();
+initializeState();
 
 </script>
 </body>

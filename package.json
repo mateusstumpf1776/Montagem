@@ -4,11 +4,20 @@
   "type": "module",
   "scripts": {
     "start": "node server-openai.mjs",
-    "test": "node --test tests/manual-analysis.test.mjs",
-    "test:browser": "node tests/browser-flow.mjs"
+    "test": "node --test tests/*.test.mjs",
+    "test:browser": "npm run build && node tests/browser-flow.mjs",
+    "build": "node web/build.mjs",
+    "prestart": "npm run build",
+    "dev": "npm run build && node server-openai.mjs"
   },
   "dependencies": {
-    "openai": "^5.0.0"
+    "esbuild": "^0.28.2",
+    "jspdf": "^4.2.1",
+    "occt-import-js": "^0.0.23",
+    "openai": "^5.0.0",
+    "pdfjs-dist": "^4.10.38",
+    "utif": "^3.1.0",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
   },
   "devDependencies": {
     "playwright-core": "^1.58.2"
