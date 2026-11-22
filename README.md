@@ -1,63 +1,46 @@
-# Montagem — manual por blocos (v5)
+# Montagem · Editor de manuais
 
-Esta versão permite **escrever os títulos dos blocos/procedimentos**, organizar suas imagens e gerar o manual com uma análise conjunta do equipamento ou móvel.
+Crie manuais de montagem de móveis domésticos a partir de um catálogo de peças, uma vista explodida e imagens do procedimento. A OpenAI organiza a lista, sugere a posição das chamadas e redige os passos. O editor permite conferir o resultado e baixar um PDF A4.
 
-## Fluxo de trabalho
+## Iniciar
 
-1. **Peças e visão geral:** descreva o produto, cadastre todas as peças e suas quantidades totais. Cada peça recebe uma chamada única (automática ou escolhida pelo autor). Insira a imagem do kit completo ou uma vista explodida e posicione as chamadas.
-2. **Blocos e imagens:** escreva o título de cada procedimento, por exemplo “Montagem da base” e “Instalação das portas”. Selecione um bloco para adicionar suas imagens. Os blocos podem ser renomeados, ordenados e excluídos.
-3. **Preparação de cada imagem:** selecione as peças visíveis, informe a quantidade usada na vista e posicione as chamadas. Uma peça mantém a mesma letra em todas as imagens; múltiplas ocorrências da mesma peça podem usar a mesma letra.
-4. **Análise conjunta:** preencha todos os blocos e escolha o detalhamento Detalhado ou Essencial. A IA recebe o catálogo, a imagem geral, todos os títulos, orientações e imagens em uma única análise. Considera dependências e o estado resultante dos procedimentos anteriores.
-5. **Manual editável:** revise as pendências. Clique nos resumos, textos e notas para editar. O editor da imagem permite adicionar, remover ou reordenar passos. Exporte Word, PDF, XML ou backup JSON.
-
-A versão correta mostra **“Blocos · v5”** no cabeçalho e **“Blocos / procedimentos do manual”** na segunda aba.
-
-## Instalação
-
-Baixe **o pacote completo** desta versão. O backend precisa de `server-openai.mjs`, `manual-analysis.mjs`, `SKILL.md` e `package.json`; não basta substituir apenas o HTML.
-
-Com Node.js 24 recomendado, execute na pasta do projeto:
+Use Node.js 24 e execute na pasta do repositório.
 
 ```sh
-npm install --package-lock=false
+npm ci
 npm start
 ```
 
-Defina antes `OPENAI_API_KEY` ou `MONTAGEM_API_KEY` no ambiente do servidor. A chave fica no backend, nunca no HTML ou no repositório. No PowerShell, por exemplo, use `$env:MONTAGEM_API_KEY="SUA_CHAVE"` antes de `npm start`.
+Abra http://localhost:3000. Para ativar os recursos de IA, defina `OPENAI_API_KEY` no ambiente do servidor antes de executar `npm start`. O alias `MONTAGEM_API_KEY` também é aceito. A chave fica no servidor. No PowerShell, use `$env:OPENAI_API_KEY = "sua-chave"` na mesma sessão em que vai iniciar o servidor.
 
-Variáveis opcionais:
-
-| Variável | Valor / função |
+| Variável opcional | Efeito |
 | --- | --- |
-| `OPENAI_MODEL` | `gpt-5.4` por padrão; precisa aceitar visão, Responses API, JSON Schema e raciocínio alto |
-| `PORT` | `3000` por padrão |
-| `NODE_USE_ENV_PROXY` | `1` em ambientes Node 24 que precisam do proxy de rede |
+| `OPENAI_MODEL` | Modelo padrão `gpt-5.4`. O modelo configurado precisa aceitar visão, Responses API, saída estruturada e raciocínio. |
+| `PORT` | Porta local. Padrão `3000`. |
+| `MONTAGEM_HOST` | Interface de rede. Padrão `127.0.0.1`. |
+| `MONTAGEM_ALLOWED_ORIGIN` | Origem autorizada adicional quando a interface usa um domínio diferente do backend. |
 
-Abra `montagem-xml-openai-v4.6.html` no navegador. O nome do arquivo foi mantido para compatibilidade; o cabeçalho identifica a versão v5. Também é possível servi-lo com `python3 -m http.server 8080` na pasta. No aplicativo, configure o endereço do backend terminando em `/api/analyze`. O cliente usa `/api/analyze-manual` para gerar o conjunto. O backend não serve o HTML.
+## Fluxo do manual
 
-## Preservação e qualidade
+1. **Lista de peças.** Importe um Excel `.xlsx` ou `.xls`, escolha a aba e confira o resultado antes de adicioná-lo ao catálogo. A IA identifica as linhas de peças e agrupa duplicatas. O servidor soma as quantidades indicadas na planilha e o aplicativo atribui chamadas A, B, C e assim por diante. Quando a planilha omite a quantidade, o valor inicial é 1 e a linha é sinalizada para conferência. Edite nomes, medidas e quantidades no catálogo de três colunas.
+2. **Vista explodida.** Importe JPEG, PNG, TIFF, PDF ou WebP. Se o arquivo tiver várias páginas, escolha a página da vista. Adicione, se desejar, um modelo `.stp` ou `.step`, um PDF de vistas técnicas ou ambos. Gere as chamadas. Arraste o círculo da letra ou a ponta da seta para corrigir a posição.
+3. **Procedimento.** Importe as imagens na ordem de montagem. Cada arquivo adicionado por **Importar imagens** cria um bloco com título editável. Marque as peças visíveis de cada imagem e informe as quantidades. Gere as chamadas por imagem ou em lote. O comando **Gerar chamadas e passos** completa as marcações pendentes, analisa o conjunto na ordem dos blocos e gera um rascunho.
+4. **Revisar manual.** Confira as pendências de localização e sequência. Edite as instruções, notas e resumos e baixe o arquivo em **Baixar PDF**. A imagem anotada e sua legenda acompanham cada bloco. Pendências em aberto seguem identificadas na exportação.
 
-- Geração conjunta com raciocínio **alto** e imagens em detalhe **alto**, sem troca automática para modelo inferior.
-- `SKILL.md` continua obrigatório, com regras R1–R6. A IA deve declarar informações insuficientes e pendências de sequência física, sem inventar operações ou componentes.
-- Não há geração automática ao editar ou trocar de aba.
-- Respostas incompletas ou inválidas e falhas da API preservam os textos anteriores. Uma resposta atrasada não substitui um manual alterado durante a geração.
-- Uma nova geração pede confirmação antes de substituir instruções existentes.
-- Backups antigos são importados em “Procedimentos importados”. As chamadas locais e os textos são ajustados ao catálogo global. Adicione a imagem geral antes de gerar novamente.
-- Salve backups JSON: o armazenamento do navegador tem limite, especialmente ao guardar muitas imagens.
+A pasta [.agents/skills/review-3d-part-drawings](.agents/skills/review-3d-part-drawings) contém a skill usada na localização das chamadas e na revisão visual da sequência. A [skill de redação técnica](SKILL.md) também é enviada nas solicitações de geração dos passos. O aplicativo sinaliza dados insuficientes para revisão técnica.
 
-Limites: 24 imagens incluindo a visão geral, 40 blocos e 30 MB por requisição. PNG/JPEG/WebP são preparados com até 2200 px no lado maior e qualidade JPEG de 92%; guarde os originais separadamente.
+## Arquivos e dados
 
-XML versão 2 inclui blocos, imagem geral e referências `blocoId` nas páginas, além dos dados existentes. Integrações com esquema XML antigo precisam aceitar esses campos. Word incorpora as chamadas nas imagens; PDF usa a impressão do navegador, que pode ser bloqueada em visualizadores incorporados.
+- O PDF de apoio aceita até oito páginas. O STEP é tessellado no navegador com Open Cascade e gera três projeções de apoio. A API recebe essas projeções, os desenhos em imagens e os dados relevantes do projeto.
+- Cada arquivo visual tem limite de 25 MB. O manual aceita até 24 imagens principais, incluindo a vista explodida. O limite de dados por solicitação ao backend é 30 MB.
+- O navegador salva o manual localmente. Use **Salvar backup** para transferir o projeto entre navegadores ou para migrar um manual da versão anterior. As opções de Word e XML continuam disponíveis.
+- Planilhas e imagens são processadas localmente antes do envio dos dados necessários para a OpenAI nas ações de IA. O PDF é gerado no navegador.
 
-## Testes
+## Verificação
 
 ```sh
 npm test
 npm run test:browser
 ```
 
-O teste de navegador requer Chromium em `/usr/bin/chromium`, ou `CHROMIUM_PATH` apontando ao binário instalado. Usa Chromium e backend reais com API OpenAI **simulada localmente**, sem chave real nem consumo de créditos. Verifica blocos, análise global, edição/persistência, falhas, resposta atrasada, backups novos e antigos e XML/Word/PDF. A qualidade semântica de uma análise real ainda exige um manual representativo e revisão técnica.
-
-## Arquivos e GitHub
-
-Preparar ou publicar um ambiente de desenvolvimento não envia commits ao GitHub. A versão baixada depende da branch escolhida no repositório. Para obter o novo fluxo, baixe a branch que contém esta revisão ou o pacote v5 fornecido junto dela.
+O teste de navegador usa Chromium, o backend real e uma resposta simulada da OpenAI. Defina `CHROMIUM_PATH` se o binário estiver fora de `/usr/bin/chromium`. Para conferir a qualidade técnica da geração em produção, use uma credencial real e os desenhos de um móvel representativo.

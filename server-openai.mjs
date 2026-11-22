@@ -1,9 +1,17 @@
 import http from 'node:http';
-import { readFileSync } from 'node:fs';
+import { createReadStream, readFileSync } from 'node:fs';
+import { stat } from 'node:fs/promises';
+import { extname } from 'node:path';
+import { parseArgs } from 'node:util';
 import OpenAI from 'openai';
+import { catalogContent, catalogInstructions, catalogResult, catalogSchema, calloutContent, calloutInstructions, calloutResult, calloutSchema } from './assembly-ai.mjs';
 import {ManualInputError,buildManualContent,manualSchema,validateManualResult} from './manual-analysis.mjs';
 
-const PORT = Number(process.env.PORT || 3000);
+const { values: args } = parseArgs({ options: {
+  host: { type: 'string' }, port: { type: 'string' }, strictPort: { type: 'boolean' }
+} });
+const PORT = Number(args.port || process.env.PORT || 3000);
+const HOST = args.host || process.env.MONTAGEM_HOST || '127.0.0.1';
 const MODEL = process.env.OPENAI_MODEL || 'gpt-5.4';
 
 // A skill de redação técnica é um artefato externo e versionável.
@@ -12,11 +20,13 @@ const MODEL = process.env.OPENAI_MODEL || 'gpt-5.4';
 // editorial sem exigir mudanças no HTML ou neste arquivo.
 const SKILL_URL = new URL('./SKILL.md', import.meta.url);
 let TECHNICAL_WRITING_SKILL;
+let DRAWING_REVIEW_SKILL;
 try {
   TECHNICAL_WRITING_SKILL = readFileSync(SKILL_URL, 'utf8').trim();
-  if (!TECHNICAL_WRITING_SKILL) throw new Error('SKILL.md está vazio.');
+  DRAWING_REVIEW_SKILL = readFileSync(new URL('./.agents/skills/review-3d-part-drawings/SKILL.md', import.meta.url), 'utf8').trim();
+  if (!TECHNICAL_WRITING_SKILL || !DRAWING_REVIEW_SKILL) throw new Error('Uma das skills está vazia.');
 } catch (err) {
-  console.error('Não foi possível carregar a skill obrigatória SKILL.md:', err?.message || err);
+  console.error('Não foi possível carregar as skills obrigatórias:', err?.message || err);
   process.exit(1);
 }
 
@@ -29,6 +39,10 @@ A política editorial abaixo é OBRIGATÓRIA em todas as análises deste endpoin
 ${TECHNICAL_WRITING_SKILL}
 ===== FIM DA SKILL OBRIGATÓRIA =====
 
+===== REVISÃO DE DESENHOS E MODELOS =====
+${DRAWING_REVIEW_SKILL}
+===== FIM DA SKILL DE REVISÃO =====
+
 REGRAS DE INTEGRAÇÃO COM ESTE APLICATIVO
 - A resposta precisa respeitar o JSON Schema solicitado pelo servidor.
 - A skill deve ser aplicada principalmente à análise da viabilidade/sequência e à redação dos steps.
@@ -40,12 +54,7 @@ REGRAS DE INTEGRAÇÃO COM ESTE APLICATIVO
 `;
 
 const apiKey=process.env.OPENAI_API_KEY||process.env.MONTAGEM_API_KEY;
-if (!apiKey) {
-  console.error('Defina OPENAI_API_KEY antes de iniciar o servidor.');
-  process.exit(1);
-}
-
-const client = new OpenAI({ apiKey, timeout:240000, maxRetries:0 });
+const client = apiKey ? new OpenAI({ apiKey, timeout:240000, maxRetries:0 }) : null;
 
 const schema = {
   type: 'object',
@@ -96,12 +105,43 @@ function send(res, status, data) {
   const body = JSON.stringify(data);
   res.writeHead(status, {
     'Content-Type': 'application/json; charset=utf-8',
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Cache-Control': 'no-store'
   });
   res.end(body);
+}
+
+const mimeTypes = {
+  '.html': 'text/html; charset=utf-8',
+  '.js': 'text/javascript; charset=utf-8',
+  '.mjs': 'text/javascript; charset=utf-8',
+  '.wasm': 'application/wasm',
+  '.bcmap': 'application/octet-stream',
+  '.pfb': 'application/octet-stream',
+  '.ttf': 'font/ttf'
+};
+const htmlPath = '/montagem-xml-openai-v4.6.html';
+async function serveApp(req, res, pathname) {
+  let url;
+  if (pathname === '/' || pathname === htmlPath) {
+    url = new URL('.' + htmlPath, import.meta.url);
+  } else if (/^\/dist\/(?:[\w-]+\/)*[\w.-]+$/.test(pathname) && mimeTypes[extname(pathname)]) {
+    url = new URL('.' + pathname, import.meta.url);
+  } else {
+    return send(res, 404, { error: 'Arquivo não encontrado.' });
+  }
+  const file = await stat(url).catch(() => null);
+  if (!file?.isFile()) return send(res, 404, { error: 'Arquivo não encontrado. Execute npm run build.' });
+  res.writeHead(200, {
+    'Content-Type': mimeTypes[extname(pathname === '/' ? htmlPath : pathname)],
+    'Content-Length': file.size,
+    'X-Content-Type-Options': 'nosniff',
+    'Cache-Control': 'no-cache'
+  });
+  if (req.method === 'HEAD') return res.end();
+  const stream = createReadStream(url);
+  res.on('close', () => stream.destroy());
+  stream.on('error', () => res.destroy());
+  stream.pipe(res);
 }
 
 async function readJson(req) {
@@ -116,23 +156,54 @@ async function readJson(req) {
 }
 
 const server = http.createServer(async (req, res) => {
+  const pathname = new URL(req.url, 'http://localhost').pathname;
+  if (req.method === 'GET' || req.method === 'HEAD') return serveApp(req, res, pathname);
+  const origin = req.headers.origin;
+  if (origin) {
+    const sameHost = origin === 'http://' + req.headers.host || origin === 'https://' + req.headers.host;
+    const configured = process.env.MONTAGEM_ALLOWED_ORIGIN === origin;
+    if (!sameHost && !configured) return send(res, 403, { error: 'Esta origem não está autorizada a chamar a API.' });
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Vary', 'Origin');
+  }
   if (req.method === 'OPTIONS') {
     res.writeHead(204, {
-      'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Headers': 'Content-Type',
       'Access-Control-Allow-Methods': 'POST, OPTIONS'
     });
     return res.end();
   }
 
-  if (req.method !== 'POST' || !['/api/analyze','/api/analyze-manual'].includes(req.url)) {
+  if (req.method !== 'POST' || !['/api/analyze','/api/analyze-manual','/api/import-parts','/api/generate-callouts'].includes(pathname)) {
     return send(res, 404, { error: 'Use POST /api/analyze' });
   }
 
   try {
-    if(req.url==='/api/analyze-manual'){
+    if (!client) return send(res, 503, { error: 'Configure OPENAI_API_KEY no ambiente do servidor e reinicie o aplicativo para usar a IA.' });
+    if (pathname === '/api/import-parts' || pathname === '/api/generate-callouts') {
+      const input = await readJson(req);
+      const catalog = pathname === '/api/import-parts';
+      const content = catalog ? catalogContent(input) : calloutContent(input);
+      const response = await client.responses.create({
+        model: MODEL,
+        store: false,
+        instructions: catalog ? catalogInstructions : DRAWING_REVIEW_SKILL + '\n\n' + calloutInstructions,
+        reasoning: { effort: catalog ? 'medium' : 'high' },
+        input: [{ role: 'user', content }],
+        text: { format: {
+          type: 'json_schema',
+          name: catalog ? 'assembly_catalog' : 'assembly_callouts',
+          strict: true,
+          schema: catalog ? catalogSchema : calloutSchema
+        } }
+      });
+      if (!response.output_text || response.status === 'incomplete') throw new Error('A OpenAI retornou uma resposta incompleta. Tente novamente.');
+      const result = JSON.parse(response.output_text);
+      return send(res, 200, catalog ? catalogResult(input, result) : calloutResult(input, result));
+    }
+    if(pathname==='/api/analyze-manual'){
       const input=await readJson(req),content=buildManualContent(input);
-      const response=await client.responses.create({model:MODEL,instructions:SKILL_INSTRUCTIONS,reasoning:{effort:'high'},input:[{role:'user',content}],text:{format:{type:'json_schema',name:'complete_assembly_manual',strict:true,schema:manualSchema}}});
+      const response=await client.responses.create({model:MODEL,store:false,instructions:SKILL_INSTRUCTIONS,reasoning:{effort:'high'},input:[{role:'user',content}],text:{format:{type:'json_schema',name:'complete_assembly_manual',strict:true,schema:manualSchema}}});
       if(!response.output_text||response.status==='incomplete')throw Error('Análise incompleta. Os textos anteriores foram preservados.');
       return send(res,200,validateManualResult(input,JSON.parse(response.output_text)));
     }
@@ -182,6 +253,7 @@ Retorne a melhor sequência fisicamente executável que os dados sustentarem, co
 
     const response = await client.responses.create({
       model: MODEL,
+      store: false,
       instructions: SKILL_INSTRUCTIONS,
       reasoning: { effort: 'medium' },
       input: [{
@@ -222,9 +294,10 @@ Retorne a melhor sequência fisicamente executável que os dados sustentarem, co
   }
 });
 
-server.listen(PORT, () => {
+server.listen(PORT, HOST, () => {
   console.log(`Servidor OpenAI pronto em http://localhost:${server.address().port}/api/analyze`);
   console.log(`Modelo: ${MODEL}`);
   console.log('Skill obrigatória carregada: redacao-tecnica-montagem v1.0.0');
-  console.log('Arquivo da skill: SKILL.md');
+  console.log('Skill de revisão carregada: review-3d-part-drawings');
+  if (!client) console.log('Configure OPENAI_API_KEY para habilitar a geração com IA.');
 });

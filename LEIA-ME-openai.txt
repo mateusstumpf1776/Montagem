@@ -1,31 +1,14 @@
-MONTAGEM — MANUAL POR BLOCOS (V5)
-===============================
+MONTAGEM · EDITOR DE MANUAIS
 
 Consulte README.md para as instruções completas.
 
-Nesta versão, a segunda aba permite escrever os títulos dos blocos e
-selecionar cada procedimento para adicionar suas imagens. A análise da IA
-usa o catálogo, a imagem geral e todos os blocos em conjunto.
+Use Node.js 24. Na pasta do projeto, execute npm ci e npm start.
+Abra http://localhost:3000.
+Para ativar a IA, configure OPENAI_API_KEY no ambiente do servidor.
 
-A versão correta mostra “Blocos · v5” no cabeçalho.
-O nome do HTML foi preservado: montagem-xml-openai-v4.6.html.
+1. Importe o Excel e confira a lista de peças.
+2. Importe a vista explodida e, se desejar, um STEP ou PDF de apoio.
+3. Adicione as imagens do procedimento e selecione as peças e quantidades.
+4. Gere as chamadas e os passos. Revise o manual e clique em Baixar PDF.
 
-Use a pasta COMPLETA desta versão, incluindo:
-- montagem-xml-openai-v4.6.html
-- server-openai.mjs
-- manual-analysis.mjs
-- SKILL.md
-- package.json
-
-Instale: npm install --package-lock=false
-Defina OPENAI_API_KEY ou MONTAGEM_API_KEY no ambiente do servidor.
-Inicie: npm start
-Modelo padrão: gpt-5.4; geração conjunta com raciocínio alto.
-
-Abra o HTML no navegador e use as abas:
-1. Peças e visão geral
-2. Blocos e imagens
-3. Análise e manual editável
-
-Salve um backup JSON do manual antes de gerar novamente ou trocar a pasta.
-A chave da API nunca deve ser salva no HTML ou enviada ao GitHub.
+A chave da API fica no servidor. Use Salvar backup para transferir seus manuais.
