@@ -110,7 +110,13 @@ async function postAssembly(path, payload, signal) {
   if (!url.pathname.endsWith('/api/' + path)) throw new Error('Configure o endereço do servidor na aba Revisar manual.');
   const body = JSON.stringify(payload);
   if (new Blob([body]).size > 30 * 1024 * 1024) throw new Error('Os dados excedem 30 MB. Reduza as imagens ou os arquivos de apoio.');
-  const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body, signal });
+  let response;
+  try {
+    response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body, signal });
+  } catch (error) {
+    if (signal?.aborted) throw error;
+    throw new Error(`O navegador não conseguiu acessar o servidor do Montagem em ${url.origin}. Confira se o servidor está ligado e revise o endereço na aba Revisar manual.`);
+  }
   const result = await response.json().catch(() => null);
   if (!response.ok || !result) throw new Error(result?.error || 'Não foi possível obter a resposta do servidor.');
   return result;
@@ -189,7 +195,9 @@ async function importExcel(file) {
     actions.append(confirm, cancel);
     review.append(list, actions);
   } catch (error) {
-    status.textContent = error.message;
+    status.textContent = error.name === 'TimeoutError'
+      ? 'A importação excedeu o tempo de espera. Tente novamente.'
+      : error.message;
   } finally {
     button.disabled = false;
   }

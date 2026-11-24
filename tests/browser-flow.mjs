@@ -11,6 +11,7 @@ import tiff from 'utif';
 const root=new URL('../',import.meta.url);let calls=0,mode='ok',lastRequest,release;
 const mock=http.createServer(async(req,res)=>{
  let raw='';for await(const c of req)raw+=c;lastRequest=JSON.parse(raw);calls++;
+ if(mode==='connection'){req.socket.destroy();return;}
  const format=lastRequest.text.format.name;
  const respond=result=>{res.writeHead(200,{'Content-Type':'application/json'});res.end(JSON.stringify({id:'mock',object:'response',status:'completed',output:[{id:'msg',type:'message',role:'assistant',content:[{type:'output_text',text:JSON.stringify(result),annotations:[]}]}]}));};
  if(format==='assembly_catalog'){
@@ -98,12 +99,25 @@ try{
  xlsx.utils.book_append_sheet(workbook,xlsx.utils.aoa_to_sheet([
    ['Peça','Medidas','Quantidade'],['Base','500 × 300 mm',2],['Base','500 × 300 mm',1],['Parafuso','M6×30',8]
  ]),'Lista');
- await fresh.locator('#excelInput').setInputFiles({
+ const workbookFile={
    name:'catalogo.xlsx',mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
    buffer:xlsx.write(workbook,{bookType:'xlsx',type:'buffer'})
- });
- await fresh.getByLabel('Aba do Excel').selectOption('Lista');
- await fresh.locator('#inputDialog').getByRole('button',{name:'Confirmar'}).click();
+ };
+ async function importWorkbook(){
+   await fresh.locator('#excelInput').setInputFiles(workbookFile);
+   await fresh.getByLabel('Aba do Excel').selectOption('Lista');
+   await fresh.locator('#inputDialog').getByRole('button',{name:'Confirmar'}).click();
+ }
+ mode='connection';
+ await importWorkbook();
+ await fresh.locator('#excelStatus').getByText('O servidor do Montagem não conseguiu conectar à OpenAI.',{exact:false}).waitFor();
+ assert.equal(await fresh.evaluate(()=>state.pecas.length),0);
+ mode='ok';
+ await fresh.route('**/api/import-parts',route=>route.abort('connectionfailed'));
+ await importWorkbook();
+ await fresh.locator('#excelStatus').getByText('O navegador não conseguiu acessar o servidor do Montagem',{exact:false}).waitFor();
+ await fresh.unroute('**/api/import-parts');
+ await importWorkbook();
  await fresh.getByRole('button',{name:'Adicionar ao catálogo'}).click();
  assert.deepEqual(await fresh.evaluate(()=>state.pecas.map(({chamada,nome,qtd})=>[chamada,nome,qtd])),[['A','Base',3],['B','Parafuso',8]]);
  await fresh.getByRole('button',{name:'Editar peça A'}).click();
