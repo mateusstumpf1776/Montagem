@@ -97,7 +97,6 @@
   .panel-body{padding:18px;}
 
   /* ---- Peças tab ---- */
-  .pecas-layout{display:grid;grid-template-columns:340px 1fr;gap:20px;align-items:start;}
   .field{margin-bottom:12px;}
   .field label{
     display:block;font-size:11px;font-family:'IBM Plex Mono',monospace;
@@ -223,20 +222,6 @@
   .step-inline-action:disabled{opacity:.28;cursor:not-allowed;}
   .hint{font-size:11.5px;color:var(--ink-soft);margin-top:4px;line-height:1.4;}
 
-  /* ---- Exportar tab ---- */
-  .export-layout{display:grid;grid-template-columns:260px 1fr;gap:20px;}
-  .export-summary .stat{
-    display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);
-    font-size:13px;
-  }
-  .export-summary .stat strong{font-family:'IBM Plex Mono',monospace;color:var(--blueprint);}
-  pre.xml-view{
-    background:#0F1826;color:#D9E3F5;padding:18px;border-radius:3px;font-family:'IBM Plex Mono',monospace;
-    font-size:12px;line-height:1.6;overflow:auto;max-height:70vh;margin:0;
-  }
-  .xml-view .tag-name{color:#7DA1F0;}
-  .xml-view .attr{color:#E0A25E;}
-  .xml-view .val{color:#9CCB8E;}
   .warn-banner{
     background:var(--safety-dim);color:#8A3E17;padding:10px 14px;border-radius:2px;font-size:12.5px;
     margin-bottom:14px;border:1px solid #EBC1A0;
@@ -279,7 +264,7 @@
 
   @media print{
     header, nav.tabs, .manual-title-bar, .preview-toolbar,
-    #tab-pecas, #tab-montagem, #tab-exportar{ display:none !important; }
+    #tab-pecas, #tab-visao, #tab-montagem{ display:none !important; }
     #tab-preview{ display:block !important; }
     main{ padding:0; max-width:100%; }
     body{ background:#fff; }
@@ -407,7 +392,7 @@
   .output-note{display:block;white-space:pre-wrap;margin-top:6px;font-size:12px;color:var(--ink-soft)}.output-note:before{content:'NOTA · ';font-weight:600}.output-note:empty:before{content:'Adicionar nota';font-weight:400;color:#8B8F98}
   .review-notes{color:#8A3E17;font-size:12px}.overview-output{max-width:520px;margin:0 auto 22px}.catalog-output{width:100%;font-size:12px;margin:14px 0 24px}.preview-steps li{display:flex;gap:8px;margin-bottom:14px}
   @media(max-width:1000px){.montagem-layout{grid-template-columns:160px minmax(0,1fr)}.montagem-layout>div:last-child{grid-column:1/-1}.general-editor{grid-template-columns:1fr}}
-  @media(max-width:800px){.montagem-layout,.block-details,.pecas-layout,.preview-block{grid-template-columns:1fr}.block-row,.preview-toolbar{flex-wrap:wrap}.block-select{min-width:60%}}
+  @media(max-width:800px){.montagem-layout,.block-details,.preview-block{grid-template-columns:1fr}.block-row,.preview-toolbar{flex-wrap:wrap}.block-select{min-width:60%}}
   @media print{.output-edit-hint,.workflow-notice,.server-config{display:none!important}.output-step-text{background:none!important;box-shadow:none!important}.output-note:empty{display:none}}
 
   body{--paper:#F5F7FC;--paper-dim:#EEF2FA;--line:#D9E0EE;--line-strong:#C4CEE0;background-image:radial-gradient(#D2DCEE 1px,transparent 1px);background-size:24px 24px}
@@ -427,6 +412,11 @@
   .next-actions{justify-content:flex-end;margin-top:16px}
   .import-panel{margin-bottom:16px}
   #pecasTableWrap,#excelReview{overflow-x:auto}
+  .catalog-piece-form{display:grid;grid-template-columns:9rem minmax(0,1fr) 8rem auto;gap:12px;align-items:end}
+  .catalog-piece-form .field{margin:0}
+  .catalog-piece-form button{min-height:36px}
+  .catalog-manual summary{font:600 14px 'IBM Plex Sans',sans-serif;letter-spacing:0;text-transform:none}
+  @media(max-width:680px){.catalog-piece-form{grid-template-columns:1fr}}
   .import-preview{max-height:260px;overflow:auto;margin:12px 0;border:1px solid var(--line)}
   .import-preview th{position:sticky;top:0;background:var(--paper)}
   .catalog-edit td:last-child{min-width:116px}
@@ -469,7 +459,6 @@
   <button data-tab="visao">2. Vista explodida</button>
   <button data-tab="montagem">3. Procedimento <span class="count" id="countPassos">0</span></button>
   <button data-tab="preview">4. Revisar manual</button>
-  <button data-tab="exportar">Exportar XML</button>
 </nav>
 
 <div class="manual-title-bar">
@@ -481,16 +470,6 @@
 
   <!-- ================= TAB: PEÇAS ================= -->
   <section id="tab-pecas">
-    <div class="panel produto-context-panel">
-      <div class="panel-header"><h2>Produto final</h2></div>
-      <div class="panel-body">
-        <div class="field" style="margin-bottom:0;">
-          <label for="produtoFinalDescricao">Descreva o produto que será montado</label>
-          <textarea id="produtoFinalDescricao" rows="3" placeholder="Ex.: Armário de duas portas e três prateleiras internas."></textarea>
-          <p class="context-example">Informe o modelo, a configuração e qualquer detalhe de montagem que apareça nas vistas.</p>
-        </div>
-      </div>
-    </div>
     <div class="panel import-panel">
       <div class="panel-header"><h2>Importar lista do Excel</h2></div>
       <div class="panel-body">
@@ -503,49 +482,37 @@
         <div id="excelReview"></div>
       </div>
     </div>
-    <div class="pecas-layout">
-      <div class="panel">
-        <div class="panel-header"><h2>Adicionar peça</h2></div>
-        <div class="panel-body">
-          <div class="field">
-            <label>Nome da peça</label>
-            <input type="text" id="pecaNome" placeholder="Ex: Lateral esquerda / Parafuso M6x40 / Tarugo 8x30">
-          </div>
-          <div class="field field-row" style="display:flex;gap:8px;">
-            <div class="field" style="flex:1;">
-              <label>Tipo</label>
-              <select id="pecaTipo">
-                <option value="peca">Peça</option>
-                <option value="parafuso">Parafuso</option>
-                <option value="porca">Porca</option>
-                <option value="tarugo">Tarugo</option>
-                <option value="outro">Outro item</option>
-              </select>
+    <div class="panel import-panel">
+      <div class="panel-header"><h2>Catálogo do móvel</h2></div>
+      <div class="panel-body">
+        <div id="pecasTableWrap"></div>
+        <details class="manual-advanced catalog-manual">
+          <summary>Adicionar peça manualmente</summary>
+          <form class="panel-body catalog-piece-form" id="catalogPieceForm">
+            <div class="field">
+              <label for="pecaChamada">Chamada</label>
+              <input type="text" id="pecaChamada" name="chamada" maxlength="3" placeholder="Automática">
             </div>
-            <div class="field" style="width:100px;">
-              <label>Qtd.</label>
-              <input type="number" id="pecaQtd" min="1" value="1">
+            <div class="field">
+              <label for="pecaNome">Nome</label>
+              <input type="text" id="pecaNome" name="nome" placeholder="Ex.: Lateral esquerda, 500 × 300 mm" required>
             </div>
-          </div>
-          <div class="field">
-            <label>Código / SKU (opcional)</label>
-            <input type="text" id="pecaCodigo" placeholder="Ex: OS-1234">
-          </div>
-          <div class="field" id="pecaTorqueField" style="display:none;">
-            <label>Torque de aperto (N·m)</label>
-            <input type="number" id="pecaTorque" min="0" step="0.1" placeholder="Ex: 8,5">
-            <p class="hint">Disponível para parafusos e porcas. A IA deverá incluir esse torque quando o fixador for apertado.</p>
-          </div>
-          <div class="field"><label for="pecaChamada">Chamada da peça</label><input id="pecaChamada" maxlength="3" placeholder="A, B, C…"><p class="hint">Letra única em todo o manual. Deixe vazio para atribuir automaticamente.</p></div>
-          <button class="btn btn-primary" id="btnAddPeca" style="width:100%;">Adicionar à lista</button>
-          <p class="hint">Cadastre aqui todas as peças, parafusos e tarugos separados antes de iniciar a montagem. Você poderá referenciá-los nas chamadas e nos passos.</p>
-        </div>
+            <div class="field">
+              <label for="pecaQtd">Quantidade</label>
+              <input type="number" id="pecaQtd" name="quantidade" min="1" max="9007199254740991" step="1" value="1" required>
+            </div>
+            <button class="btn" id="btnAddPeca">Adicionar peça</button>
+          </form>
+        </details>
       </div>
-
-      <div class="panel">
-        <div class="panel-header"><h2>Catálogo do móvel</h2></div>
-        <div class="panel-body" id="pecasTableWrap">
-          <div class="empty-state">Nenhuma peça cadastrada ainda.</div>
+    </div>
+    <div class="panel produto-context-panel">
+      <div class="panel-header"><h2>Produto final</h2></div>
+      <div class="panel-body">
+        <div class="field" style="margin-bottom:0;">
+          <label for="produtoFinalDescricao">Descreva o produto que será montado</label>
+          <textarea id="produtoFinalDescricao" rows="3" placeholder="Ex.: Armário de duas portas e três prateleiras internas."></textarea>
+          <p class="context-example">Informe o modelo, a configuração e qualquer detalhe de montagem que apareça nas vistas.</p>
         </div>
       </div>
     </div>
@@ -699,25 +666,6 @@
     <div id="manualReadiness" class="workflow-notice" aria-live="polite"></div><div id="globalAnalysis" class="workflow-notice"></div><p class="output-edit-hint">Clique nos resumos, instruções e notas do manual para editar. Salve um backup antes de gerar novamente.</p>
     <div id="previewValidation"></div>
     <div class="preview-page" id="previewContent"></div>
-  </section>
-
-  <!-- ================= TAB: EXPORTAR ================= -->
-  <section id="tab-exportar" style="display:none;">
-    <div class="export-layout">
-      <div class="panel export-summary">
-        <div class="panel-header"><h2>Resumo</h2></div>
-        <div class="panel-body" id="exportSummary"></div>
-        <div class="panel-body" style="border-top:1px solid var(--line);">
-          <button class="btn btn-primary" id="btnDownloadXml" style="width:100%;">Baixar XML</button>
-        </div>
-      </div>
-      <div class="panel">
-        <div class="panel-header"><h2>manual-montagem.xml</h2></div>
-        <div class="panel-body">
-          <pre class="xml-view" id="xmlPreview"></pre>
-        </div>
-      </div>
-    </div>
   </section>
 
 </main>
@@ -910,11 +858,10 @@ document.querySelectorAll('nav.tabs button').forEach(btn=>{
   btn.addEventListener('click', ()=>{
     document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
-    ['pecas','visao','montagem','preview','exportar'].forEach(t=>{
+    ['pecas','visao','montagem','preview'].forEach(t=>{
       document.getElementById('tab-'+t).style.display = (t===btn.dataset.tab) ? '' : 'none';
     });
     if(['pecas','visao','montagem'].includes(btn.dataset.tab)){state.editorContext=btn.dataset.tab!=='montagem'?'geral':'bloco';if(state.editorContext==='bloco'&&!blockPages(state.currentBlockId).some(p=>p.id===state.currentStepId))state.currentStepId=blockPages(state.currentBlockId)[0]?.id||null;placeEditor();renderEditor();}
-    if(btn.dataset.tab==='exportar')renderExport();
     if(btn.dataset.tab==='preview')renderPreview();
   });
 });
@@ -930,43 +877,36 @@ document.getElementById('produtoFinalDescricao').addEventListener('input', e=>{
   scheduleAutoGenerate();
 });
 
-document.getElementById('pecaTipo').addEventListener('change', e=>{
-  const show=e.target.value==='parafuso' || e.target.value==='porca';
-  document.getElementById('pecaTorqueField').style.display=show?'':'none';
-  if(!show) document.getElementById('pecaTorque').value='';
-});
-
 /* ============================================================
    PEÇAS
    ============================================================ */
-document.getElementById('btnAddPeca').addEventListener('click', ()=>{
-  const nome = document.getElementById('pecaNome').value.trim();
-  const tipo = document.getElementById('pecaTipo').value;
-  const qtd = parseInt(document.getElementById('pecaQtd').value) || 1;
-  const codigo = document.getElementById('pecaCodigo').value.trim();
-  const torqueRaw = parseFloat(String(document.getElementById('pecaTorque').value||'').replace(',','.'));
-  const torqueNm = (tipo==='parafuso' || tipo==='porca') && Number.isFinite(torqueRaw) && torqueRaw>0 ? torqueRaw : null;
-  if(!nome){ showToast('Informe o nome da peça.', 'error'); return; }
-  const chamada=document.getElementById('pecaChamada').value.trim().toUpperCase()||nextCatalogLetter();
-  if(!/^[A-Z]{1,3}$/.test(chamada)||state.pecas.some(p=>p.chamada===chamada)){showToast('Use uma chamada única de 1 a 3 letras.','error');return;}
-  const piece={id:uid('p'),nome,tipo,qtd:Math.max(1,qtd),codigo,torqueNm,chamada};
-  appendCatalogPiece(piece);
-  document.getElementById('pecaChamada').value='';
-  document.getElementById('pecaNome').value='';
-  document.getElementById('pecaCodigo').value='';
-  document.getElementById('pecaQtd').value=1;
-  document.getElementById('pecaTorque').value='';
-  save(); renderPecas(); renderCounts();renderEditor();renderReadiness();
-});
+document.getElementById('catalogPieceForm').addEventListener('submit', event=>{
+  event.preventDefault();
+  const form = event.currentTarget;
+  const nome = form.elements.nome.value.trim();
+  const qtd = form.elements.quantidade.valueAsNumber;
+  const chamada = form.elements.chamada.value.trim().toUpperCase() || nextCatalogLetter();
+  if(!nome){showToast('Informe o nome da peça.','error');return;}
+  if(!Number.isSafeInteger(qtd) || qtd < 1){showToast('Informe uma quantidade inteira maior que zero.','error');return;}
+  if(!/^[A-Z]{1,3}$/.test(chamada) || state.pecas.some(piece=>piece.chamada===chamada)){
+    showToast('Use uma chamada única de 1 a 3 letras.','error');
+    return;
+  }
 
-function tipoLabel(tipo){
-  return {peca:'Peça', parafuso:'Parafuso', porca:'Porca', tarugo:'Tarugo', outro:'Outro'}[tipo] || tipo;
-}
+  const tipo = /^(parafuso|porca|tarugo)s?\b/i.exec(nome)?.[1].toLowerCase() || 'peca';
+  appendCatalogPiece({id:uid('p'), chamada, nome, qtd, tipo});
+  form.reset();
+  save();
+  renderPecas();
+  renderCounts();
+  renderEditor();
+  renderReadiness();
+});
 
 function renderPecas(){
   const wrap = document.getElementById('pecasTableWrap');
   if(state.pecas.length === 0){
-    wrap.innerHTML = '<div class="empty-state">Nenhuma peça cadastrada ainda.</div>';
+    wrap.innerHTML = '<div class="empty-state">Importe a lista do Excel para preencher o catálogo.</div>';
     return;
   }
   wrap.innerHTML = `<table class="catalog-edit">
@@ -1745,104 +1685,6 @@ document.getElementById('btnGenerateDraft').addEventListener('click',()=>{
 });
 
 /* ============================================================
-   EXPORTAÇÃO XML
-   ============================================================ */
-function buildXmlBase(){
-  const esc = (s)=> String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  const titulo = state.titulo && state.titulo.trim() ? state.titulo : '';
-  let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
-  xml += `<manual titulo="${esc(titulo)}">\n`;
-  if(state.produtoFinalDescricao && state.produtoFinalDescricao.trim()) xml += `  <produtoFinal>${esc(state.produtoFinalDescricao.trim())}</produtoFinal>\n`;
-
-  xml += '  <pecas>\n';
-  state.pecas.forEach(p=>{
-    xml += `    <peca id="${p.id}" tipo="${p.tipo}" nome="${esc(p.nome)}" quantidade="${p.qtd}"${p.especificacao?` especificacao="${esc(p.especificacao)}"`:''}${p.codigo?` codigo="${esc(p.codigo)}"`:''}${p.torqueNm?` torqueNm="${p.torqueNm}"`:''}/>\n`;
-  });
-  xml += '  </pecas>\n';
-
-  xml += '  <paginas>\n';
-  state.passos.forEach((s,idx)=>{
-    xml += `    <pagina numero="${idx+1}" nomeImagem="${esc(s.nome)}">\n`;
-    xml += '      <pecasVisiveis>\n';
-    (s.selectedPecaIds||[]).forEach(pid=>{ const p=state.pecas.find(x=>x.id===pid); if(p) xml += `        <pecaRef id="${p.id}" nome="${esc(p.nome)}" quantidadeNestaVista="${Math.max(1,Math.min(p.qtd,parseInt((s.partUsage||{})[p.id])||1))}"/>\n`; });
-    xml += '      </pecasVisiveis>\n';
-    xml += '      <chamadas>\n';
-    s.chamadas.forEach((c,cidx)=>{
-      const peca = state.pecas.find(p=>p.id===c.pecaId);
-      const posAttrs = (c.x!=null) ? ` x="${c.x}" y="${c.y}"` : '';
-      xml += `        <chamada letra="${letterForCallout(c)}" id="${c.id}" pecaId="${c.pecaId||''}" pecaNome="${esc(peca?peca.nome:'')}"${posAttrs}/>\n`;
-    });
-    xml += '      </chamadas>\n';
-    xml += '      <legendas>\n';
-    uniqueCallouts(s).forEach((c,cidx)=>{ const peca=state.pecas.find(p=>p.id===c.pecaId); xml += `        <legenda letra="${letterForCallout(c)}" texto="${esc(legendTextForCallout(s,c,cidx))}"${peca?` pecaId="${peca.id}"`:''}/>\n`; });
-    xml += '      </legendas>\n';
-    xml += '      <passos>\n';
-    s.passos.forEach((pa,pidx)=>{
-      const item = state.pecas.find(p=>p.id===pa.itemId);
-      xml += `        <passo numero="${pidx+1}">\n`;
-      xml += `          <descricao>${esc(instrucaoTexto(pa, s))}</descricao>\n`;
-      xml += '          <chamadaRefs>\n';
-      (pa.chamadaIds||[]).forEach(cid=>{
-        const cidx = s.chamadas.findIndex(c=>c.id===cid);
-        if(cidx > -1) xml += `            <chamadaRef letra="${letterForCallout(s.chamadas[cidx])}" id="${cid}"/>\n`;
-      });
-      xml += '          </chamadaRefs>\n';
-      xml += '          <pecaRefs>\n';
-      (pa.pecaIds||[]).forEach(pid=>{ const p=state.pecas.find(x=>x.id===pid); if(p) xml += `            <pecaRef id="${p.id}" nome="${esc(p.nome)}"/>\n`; });
-      xml += '          </pecaRefs>\n';
-      xml += `          <atividade tipo="${pa.atividade}">\n`;
-      if(item){
-        const tagName = item.tipo==='parafuso' ? 'parafusoRef' : item.tipo==='porca' ? 'porcaRef' : item.tipo==='tarugo' ? 'tarugoRef' : 'itemRef';
-        xml += `            <${tagName} id="${item.id}" nome="${esc(item.nome)}"/>\n`;
-      }
-      xml += '          </atividade>\n';
-      if(pa.obs) xml += `          <observacao>${esc(pa.obs)}</observacao>\n`;
-      xml += '        </passo>\n';
-    });
-    xml += '      </passos>\n';
-    xml += '    </pagina>\n';
-  });
-  xml += '  </paginas>\n</manual>';
-  return xml;
-}
-
-function highlightXml(xml){
-  return xml
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-    .replace(/&lt;(\/?[a-zA-Z0-9]+)/g, '&lt;<span class="tag-name">$1</span>')
-    .replace(/([a-zA-Z]+)=(&quot;.*?&quot;|"[^"]*")/g, '<span class="attr">$1</span>=<span class="val">$2</span>');
-}
-
-function renderExport(){
-  const totalChamadas = state.passos.reduce((sum,p)=>sum+p.chamadas.length,0);
-  const totalPassosCount = state.passos.reduce((sum,p)=>sum+p.passos.length,0);
-  const incompletos = state.passos.reduce((sum,p)=> sum + p.passos.filter(pa=>!String(pa.descricaoIA||'').trim()).length, 0);
-  const validationIssues=validateManual();
-  const vCounts=validationCounts(validationIssues);
-  const validationHtml=validationIssues.slice(0,12).map(i=>`<li><strong>${escapeHtml(i.rule)}</strong> ${escapeHtml((Number.isInteger(i.pageIndex)?'Imagem '+(i.pageIndex+1)+(Number.isInteger(i.stepIndex)?', step '+(i.stepIndex+1):'')+': ':'')+i.message)}</li>`).join('');
-  document.getElementById('exportSummary').innerHTML = `
-    <div class="stat"><span>Peças cadastradas</span><strong>${state.pecas.length}</strong></div>
-    <div class="stat"><span>Páginas (imagens)</span><strong>${state.passos.length}</strong></div>
-    <div class="stat"><span>Chamadas marcadas</span><strong>${totalChamadas}</strong></div>
-    <div class="stat"><span>Passos definidos</span><strong>${totalPassosCount}</strong></div>
-    <div class="stat"><span>Erros da skill</span><strong style="color:${vCounts.errors>0?'var(--safety)':'var(--success)'}">${vCounts.errors}</strong></div>
-    <div class="stat"><span>Avisos da skill</span><strong>${vCounts.warnings}</strong></div>
-    ${incompletos>0 ? '<div class="warn-banner" style="margin-top:12px;">Há instruções sem texto. Revise-as na aba Blocos e imagens antes de finalizar.</div>' : ''}
-    ${validationIssues.length?`<div class="warn-banner" style="margin-top:12px;"><strong>Validação automática:</strong><ul style="margin:6px 0 0 18px;padding:0;">${validationHtml}</ul>${validationIssues.length>12?`<div class="hint">+ ${validationIssues.length-12} pendência(s).</div>`:''}</div>`:'<div style="margin-top:12px;padding:10px;background:var(--success-dim);color:var(--success);border:1px solid #B8D2BC;">R1–R5 sem pendências determinísticas. R6 ainda exige revisão técnica.</div>'}
-  `;
-  const xml = buildXml();
-  document.getElementById('xmlPreview').innerHTML = highlightXml(xml);
-  document.getElementById('btnDownloadXml').onclick = ()=>{
-    const blob = new Blob([xml], {type:'application/xml'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = 'manual-montagem.xml';
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-}
-
-/* ============================================================
    EXPORTAÇÃO WORD / PDF
    ============================================================ */
 function nomeArquivoBase(){
@@ -2106,18 +1948,6 @@ function renderPreview(){
 }
 function renderOutputOverlays(){document.querySelectorAll('.preview-callout-layer').forEach(layer=>{const p=[state.visaoGeral,...state.passos].find(p=>p?.id===layer.dataset.previewStepId),img=layer.parentElement.querySelector('img');if(p&&img){const draw=()=>renderCalloutLayer(layer,p,{imgEl:img});if(img.complete)draw();else img.addEventListener('load',draw,{once:true});}});}
 window.addEventListener('resize',()=>{renderStageCalloutLayer();renderOutputOverlays();});
-function buildXml(){
-  const pages=state.passos;let raw;try{state.passos=orderedPages();raw=buildXmlBase();}finally{state.passos=pages;}
-  const doc=new DOMParser().parseFromString(raw,'application/xml');if(doc.querySelector('parsererror'))throw Error('Não foi possível gerar o XML.');
-  const root=doc.documentElement;root.setAttribute('versao','2');
-  const add=(parent,name,text,attrs={})=>{const el=doc.createElement(name);if(text!=null)el.textContent=text;for(const [k,v]of Object.entries(attrs))el.setAttribute(k,v??'');parent.appendChild(el);return el;};
-  [...doc.querySelectorAll('pecas > peca')].forEach((el,i)=>el.setAttribute('chamada',state.pecas[i].chamada));
-  if(state.visaoGeral){const p=state.visaoGeral,g=add(root,'visaoGeral',null,{id:p.id});add(g,'imagem',p.imagemData);p.chamadas.forEach(c=>add(g,'chamada',null,{id:c.id,pecaId:c.pecaId,letra:letterForCallout(c),x:c.x,y:c.y,tipX:c.tipX,tipY:c.tipY}));}
-  const analysis=(parent,data)=>{if(!data)return;const el=add(parent,'analise');add(el,'resumo',data.summary);(data.uncertainties||[]).forEach(x=>add(el,'pendencia',x));(data.dependencies||[]).forEach(id=>add(el,'dependencia',null,{blocoId:id}));};
-  analysis(root,state.manualAnalysis);const blocks=add(root,'blocos');state.blocos.forEach((b,i)=>{const el=add(blocks,'bloco',null,{id:b.id,titulo:b.titulo,ordem:i+1});add(el,'orientacoes',b.orientacoes||'');analysis(el,b.aiAnalysis);});
-  [...doc.querySelectorAll('paginas > pagina')].forEach((el,i)=>{const p=orderedPages()[i];el.setAttribute('id',p.id);el.setAttribute('blocoId',p.blocoId);add(el,'imagem',p.imagemData);analysis(el,p.aiAnalysis);el.querySelectorAll('chamadas > chamada').forEach((node,n)=>{node.setAttribute('tipX',p.chamadas[n].tipX);node.setAttribute('tipY',p.chamadas[n].tipY);});});
-  return new XMLSerializer().serializeToString(doc);
-}
 async function annotatedImageData(p){
   const img=new Image();img.src=p.imagemData;await img.decode();const canvas=document.createElement('canvas');canvas.width=img.naturalWidth;canvas.height=img.naturalHeight;const x=canvas.getContext('2d');x.drawImage(img,0,0);const width=520,height=canvas.height*width/canvas.width;x.scale(canvas.width/width,canvas.width/width);
   for(const c of p.chamadas){const g=calloutGeometry(c,width,height),dx=g.tipX-g.cx,dy=g.tipY-g.cy,d=Math.hypot(dx,dy)||1,ux=dx/d,uy=dy/d;x.strokeStyle='#1B2740';x.fillStyle='#1B2740';x.lineWidth=2;x.beginPath();x.moveTo(g.lineStartX,g.lineStartY);x.lineTo(g.tipX,g.tipY);x.stroke();x.beginPath();x.moveTo(g.tipX,g.tipY);x.lineTo(g.tipX-ux*12-uy*5,g.tipY-uy*12+ux*5);x.lineTo(g.tipX-ux*12+uy*5,g.tipY-uy*12-ux*5);x.closePath();x.fill();x.beginPath();x.arc(g.cx,g.cy,16,0,Math.PI*2);x.fillStyle='#fff';x.fill();x.stroke();x.fillStyle='#1B2740';x.font='bold 14px Arial';x.textAlign='center';x.textBaseline='middle';x.fillText(letterForCallout(c),g.cx,g.cy);}return canvas.toDataURL('image/png');

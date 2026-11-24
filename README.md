@@ -22,7 +22,7 @@ Abra http://localhost:3000. Para ativar os recursos de IA, defina `OPENAI_API_KE
 
 ## Fluxo do manual
 
-1. **Lista de peças.** Importe um Excel `.xlsx` ou `.xls`, escolha a aba e confira o resultado antes de adicioná-lo ao catálogo. A IA identifica as linhas de peças e agrupa duplicatas. O servidor soma as quantidades indicadas na planilha e o aplicativo atribui chamadas A, B, C e assim por diante. Quando a planilha omite a quantidade, o valor inicial é 1 e a linha é sinalizada para conferência. Edite nomes, medidas e quantidades no catálogo de três colunas.
+1. **Lista de peças.** Importe um Excel `.xlsx` ou `.xls`, escolha a aba e confira o resultado antes de adicioná-lo ao catálogo. A IA identifica as linhas de peças e agrupa duplicatas. O servidor soma as quantidades indicadas na planilha e o aplicativo atribui chamadas A, B, C e assim por diante. Quando a planilha omite a quantidade, o valor inicial é 1 e a linha é sinalizada para conferência. Edite nomes, medidas e quantidades no catálogo. Para incluir uma peça avulsa, abra **Adicionar peça manualmente** e preencha nome, quantidade e, se quiser, a chamada.
 2. **Vista explodida.** Importe JPEG, PNG, TIFF, PDF ou WebP. Se o arquivo tiver várias páginas, escolha a página da vista. Adicione, se desejar, um modelo `.stp` ou `.step`, um PDF de vistas técnicas ou ambos. Gere as chamadas. Arraste o círculo da letra ou a ponta da seta para corrigir a posição.
 3. **Procedimento.** Importe as imagens na ordem de montagem. Cada arquivo adicionado por **Importar imagens** cria um bloco com título editável. Marque as peças visíveis de cada imagem e informe as quantidades. Gere as chamadas por imagem ou em lote. O comando **Gerar chamadas e passos** completa as marcações pendentes, analisa o conjunto na ordem dos blocos e gera um rascunho.
 4. **Revisar manual.** Confira as pendências de localização e sequência. Edite as instruções, notas e resumos e baixe o arquivo em **Baixar PDF**. A imagem anotada e sua legenda acompanham cada bloco. Pendências em aberto seguem identificadas na exportação.
@@ -33,7 +33,7 @@ A pasta [.agents/skills/review-3d-part-drawings](.agents/skills/review-3d-part-d
 
 - O PDF de apoio aceita até oito páginas. O STEP é tessellado no navegador com Open Cascade e gera três projeções de apoio. A API recebe essas projeções, os desenhos em imagens e os dados relevantes do projeto.
 - Cada arquivo visual tem limite de 25 MB. O manual aceita até 24 imagens principais, incluindo a vista explodida. O limite de dados por solicitação ao backend é 30 MB.
-- O navegador salva o manual localmente. Use **Salvar backup** para transferir o projeto entre navegadores ou para migrar um manual da versão anterior. As opções de Word e XML continuam disponíveis.
+- O navegador salva o manual localmente. Use **Salvar backup** para transferir o projeto entre navegadores ou para migrar um manual da versão anterior. Use **Baixar Word** para editar o documento fora do aplicativo.
 - Planilhas e imagens são processadas localmente antes do envio dos dados necessários para a OpenAI nas ações de IA. O PDF é gerado no navegador.
 
 ## Verificação

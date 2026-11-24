@@ -46,8 +46,25 @@ let browser;
 try{
  browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||'/usr/bin/chromium',args:['--no-sandbox','--disable-dev-shm-usage']});const page=await browser.newPage({viewport:{width:1500,height:1000}}),errors=[];page.on('pageerror',e=>errors.push(e.message));await page.route('https://fonts.googleapis.com/**',r=>r.abort());
  await page.goto(`http://127.0.0.1:${apiPort}`,{waitUntil:'domcontentloaded'});await page.locator('#manualTitulo').fill('Manual por blocos');
- for(const [nome,letra]of[['Base','K'],['Tampa','A']]){await page.locator('#pecaNome').fill(nome);await page.locator('#pecaChamada').fill(letra);await page.locator('#btnAddPeca').click();}
- const pieces=await page.evaluate(()=>state.pecas.map(p=>({id:p.id,chamada:p.chamada})));assert.deepEqual(pieces.map(p=>p.chamada),['K','A']);
+ assert.deepEqual(await page.locator('nav.tabs button').evaluateAll(buttons=>buttons.map(button=>button.dataset.tab)),['pecas','visao','montagem','preview']);
+ const form=page.locator('#catalogPieceForm');
+ assert.equal(await form.isVisible(),false);
+ await page.getByText('Adicionar peça manualmente',{exact:true}).click();
+ assert.deepEqual(await form.locator('label').allTextContents(),['Chamada','Nome','Quantidade']);
+ assert.equal(await form.locator('input, select, textarea').count(),3);
+ for(const [nome,letra,qtd]of[['Base','k','4'],['Tampa','','1']]){
+   await form.getByLabel('Nome',{exact:true}).fill(nome);
+   await form.getByLabel('Chamada',{exact:true}).fill(letra);
+   await form.getByLabel('Quantidade',{exact:true}).fill(qtd);
+   await form.getByRole('button',{name:'Adicionar peça',exact:true}).click();
+ }
+ const pieces=await page.evaluate(()=>state.pecas.map(({id,chamada,qtd})=>({id,chamada,qtd})));
+ assert.deepEqual(pieces.map(({chamada,qtd})=>[chamada,qtd]),[['K',4],['A',1]]);
+ await form.getByLabel('Nome',{exact:true}).fill('Peça duplicada');
+ await form.getByLabel('Chamada',{exact:true}).fill('K');
+ await form.getByRole('button',{name:'Adicionar peça',exact:true}).click();
+ await page.getByText('Use uma chamada única de 1 a 3 letras.').waitFor();
+ assert.equal(await page.locator('#pecasTableWrap tbody tr').count(),2);
  const png=await page.evaluate(()=>{const c=document.createElement('canvas');c.width=600;c.height=350;const x=c.getContext('2d');x.fillStyle='white';x.fillRect(0,0,600,350);x.fillStyle='#5577aa';x.fillRect(80,80,180,150);x.fillStyle='#aa8855';x.fillRect(350,100,150,140);return c.toDataURL('image/png').split(',')[1];});const file={name:'kit.png',mimeType:'image/png',buffer:Buffer.from(png,'base64')};
  await page.locator('[data-tab="visao"]').click();await page.locator('#generalImageInput').setInputFiles(file);await page.locator('#stageImg').waitFor();await page.locator('#btnToggleMarkerMode').click();
  async function mark(pid,n=0){await page.locator('#stageImg').click({position:{x:75+n*95,y:90}});await page.locator('.chamada-peca-select').last().selectOption(pid);await page.waitForFunction(()=>document.querySelectorAll('#stageCalloutLayer .callout-label').length===currentStep().chamadas.length);}
@@ -61,7 +78,6 @@ try{
  await page.reload({waitUntil:'domcontentloaded'});await page.locator('main[data-ready]').waitFor();await page.locator('[data-tab="preview"]').click();assert.equal(await page.locator('[data-instruction]').first().innerText(),'Alinhe a base (K) com cuidado.');assert.equal(await page.locator('[data-global-summary]').innerText(),'Resumo revisado.');
  for(const failure of['incomplete','auth']){mode=failure;await page.locator('#btnGerarIA').click();await page.locator('#confirmOk').click();await page.waitForFunction(()=>!analysisRunning);assert.equal(await page.locator('[data-instruction]').first().innerText(),'Alinhe a base (K) com cuidado.');}assert.ok(!(await page.locator('body').innerText()).includes('LOCAL-TEST-SECRET'));
  mode='delay';const before=calls;await page.locator('#btnGerarIA').click();await page.locator('#confirmOk').click();while(calls===before)await new Promise(r=>setTimeout(r,10));await page.locator('#manualTitulo').fill('Alterado durante análise');release();await page.waitForFunction(()=>!analysisRunning);assert.match(await page.locator('#previewStatus').innerText(),/mudou durante a análise/);
- await page.locator('[data-tab="exportar"]').click();const xml=await page.evaluate(()=>buildXml());const parsed=await page.evaluate(xml=>{const d=new DOMParser().parseFromString(xml,'application/xml');return {error:!!d.querySelector('parsererror'),pages:d.querySelectorAll('paginas > pagina').length,blocks:d.querySelectorAll('blocos > bloco').length,calls:[...d.querySelectorAll('visaoGeral > chamada')].map(c=>c.getAttribute('letra'))};},xml);assert.deepEqual(parsed,{error:false,pages:3,blocks:2,calls:['K','A']});
  const wordEvent=page.waitForEvent('download');await page.locator('#btnBaixarWord').click();const word=await readFile(await(await wordEvent).path(),'utf8');assert.ok(word.includes('Nota editada pelo autor.')&&word.includes('Fechar o conjunto')&&!word.includes('<svg'));
  await page.locator('[data-tab="montagem"]').click();await page.locator(`[data-move-block="${blocks[1]}"][data-delta="-1"]`).click();await page.locator('[data-tab="preview"]').click();assert.deepEqual(await page.locator('.manual-block-heading').allTextContents(),['1. Fechar o conjunto','2. Preparar a base']);assert.match(await page.locator('#manualReadiness').innerText(),/dados mudaram/i);assert.equal(calls,before+1);
  await page.emulateMedia({media:'print'});assert.ok((await page.pdf({format:'A4'})).byteLength>10000);await page.emulateMedia({media:'screen'});
@@ -92,8 +108,10 @@ try{
  assert.deepEqual(await fresh.evaluate(()=>state.pecas.map(({chamada,nome,qtd})=>[chamada,nome,qtd])),[['A','Base',3],['B','Parafuso',8]]);
  await fresh.getByRole('button',{name:'Editar peça A'}).click();
  await fresh.getByLabel('Medidas e especificações',{exact:true}).fill('510 × 300 mm');
+ await fresh.locator('#inputDialog').getByLabel('Quantidade',{exact:true}).fill('4');
  await fresh.locator('#inputDialog').getByRole('button',{name:'Confirmar'}).click();
  await fresh.locator('#pecasTableWrap').getByText('Base, 510 × 300 mm',{exact:true}).waitFor();
+ assert.equal(await fresh.evaluate(()=>state.pecas[0].qtd),4);
 
  const drawing=new jsPDF();
  drawing.text('Vista frontal',20,20);
