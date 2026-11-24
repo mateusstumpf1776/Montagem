@@ -155,6 +155,28 @@ async function readJson(req) {
   return JSON.parse(Buffer.concat(chunks).toString('utf8'));
 }
 
+function openAiConnectionHint(error) {
+  const code = error.cause?.cause?.code ?? error.cause?.code;
+  switch (code) {
+    case 'ENOTFOUND':
+    case 'EAI_AGAIN':
+      return 'O endereço da API não foi encontrado pelo DNS.';
+    case 'SELF_SIGNED_CERT_IN_CHAIN':
+    case 'DEPTH_ZERO_SELF_SIGNED_CERT':
+    case 'UNABLE_TO_GET_ISSUER_CERT_LOCALLY':
+    case 'UNABLE_TO_VERIFY_LEAF_SIGNATURE':
+    case 'CERT_HAS_EXPIRED':
+    case 'ERR_TLS_CERT_ALTNAME_INVALID':
+      return 'O Node.js não conseguiu validar o certificado. Confira o proxy e os certificados da rede.';
+    case 'ECONNREFUSED':
+    case 'ECONNRESET':
+    case 'UND_ERR_SOCKET':
+      return 'A conexão foi recusada ou interrompida. Verifique a rede, o firewall ou o proxy e tente novamente.';
+    default:
+      return 'Verifique a rede, o firewall ou o proxy e tente novamente.';
+  }
+}
+
 const server = http.createServer(async (req, res) => {
   const pathname = new URL(req.url, 'http://localhost').pathname;
   if (req.method === 'GET' || req.method === 'HEAD') return serveApp(req, res, pathname);
@@ -287,8 +309,17 @@ Retorne a melhor sequência fisicamente executável que os dados sustentarem, co
 
     return send(res, 200, analysis);
   } catch (err) {
+    if (err instanceof OpenAI.APIConnectionTimeoutError) {
+      console.error(`A OpenAI não respondeu no prazo em ${pathname}.`);
+      return send(res, 504, { error: 'A OpenAI não respondeu no prazo. Tente novamente em alguns instantes.' });
+    }
+    if (err instanceof OpenAI.APIConnectionError) {
+      const hint = openAiConnectionHint(err);
+      console.error(`Falha na conexão com a OpenAI em ${pathname}. ${hint}`);
+      return send(res, 502, { error: `O servidor do Montagem não conseguiu conectar à OpenAI. ${hint}` });
+    }
     const status=err instanceof ManualInputError||err instanceof SyntaxError?400:502;
-    const message=err?.status===401?'A credencial da OpenAI foi rejeitada. Revise a chave no servidor.':err?.status===429?'Limite ou saldo da API atingido. Verifique o faturamento.':err?.status?`A OpenAI recusou a análise (HTTP ${err.status}). Verifique o modelo e o acesso.`:err?.name==='APIConnectionError'?'Não foi possível conectar à OpenAI. Verifique a rede e o proxy.':err?.message||'Falha na análise.';
+    const message=err?.status===401?'A credencial da OpenAI foi rejeitada. Revise a chave no servidor.':err?.status===429?'Limite ou saldo da API atingido. Verifique o faturamento.':err?.status?`A OpenAI recusou a análise (HTTP ${err.status}). Verifique o modelo e o acesso.`:err?.message||'Falha na análise.';
     console.error('Falha na análise:',err?.name,err?.status||status);
     return send(res,status,{error:message});
   }

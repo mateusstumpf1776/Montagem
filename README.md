@@ -20,6 +20,14 @@ Abra http://localhost:3000. Para ativar os recursos de IA, defina `OPENAI_API_KE
 | `MONTAGEM_HOST` | Interface de rede. Padrão `127.0.0.1`. |
 | `MONTAGEM_ALLOWED_ORIGIN` | Origem autorizada adicional quando a interface usa um domínio diferente do backend. |
 
+Se a importação indicar falha de conexão com a OpenAI, execute este comando no PowerShell. Ele testa o acesso do Node.js ao endereço da API sem usar a chave.
+
+```powershell
+node -e "fetch('https://api.openai.com/v1/models').then(r => console.log('HTTP', r.status)).catch(e => console.log(e.cause?.code ?? e.name))"
+```
+
+`HTTP 401` é a resposta esperada para este teste sem chave e indica que o Node.js alcançou a API. Se aparecer um erro de DNS, certificado ou conexão, confira a rede. Se a sua rede usa um proxy informado pela equipe de TI, configure `HTTPS_PROXY` com esse endereço e defina `$env:NODE_USE_ENV_PROXY = "1"` antes de iniciar o servidor com Node.js 24 atualizado.
+
 ## Fluxo do manual
 
 1. **Lista de peças.** Importe um Excel `.xlsx` ou `.xls`, escolha a aba e confira o resultado antes de adicioná-lo ao catálogo. A IA identifica as linhas de peças e agrupa duplicatas. O servidor soma as quantidades indicadas na planilha e o aplicativo atribui chamadas A, B, C e assim por diante. Quando a planilha omite a quantidade, o valor inicial é 1 e a linha é sinalizada para conferência. Edite nomes, medidas e quantidades no catálogo. Para incluir uma peça avulsa, abra **Adicionar peça manualmente** e preencha nome, quantidade e, se quiser, a chamada.
